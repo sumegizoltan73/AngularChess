@@ -8,7 +8,9 @@
     </tr>
     <tr *ngFor="let row of y; let i = index;">
         <td>{{ row }}</td>
-        <td *ngFor="let td of x; let j = index;" [ngClass]="{'white': isCellWhite(j, i), 'black': !isCellWhite(j, i) }">
+        <td *ngFor="let td of x; let j = index;" 
+                [ngClass]="{'white': isCellWhite(j, i), 'black': !isCellWhite(j, i) }"
+                (click)="onCellClick(j, i)">
             <span class="material-icons" [ngClass]="colorOfFigure(j, i)">{{ figure(j, i) }}</span>
         </td>
         <td>{{ row }}</td>
@@ -21,3 +23,5 @@
         <td></td>
     </tr>
 </table>
+
+<p>{{ msg}}</p>

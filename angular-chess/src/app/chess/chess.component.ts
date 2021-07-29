@@ -11,6 +11,16 @@ export interface ICell {
   figure: IFigure | null;
 }
 
+export interface ICord {
+  x: number;
+  y: number;
+}
+
+export interface IStep {
+  from: ICord | null;
+  to: ICord | null;
+}
+
 @Component({
   selector: 'app-chess',
   templateUrl: './chess.component.html',
@@ -20,17 +30,35 @@ export class ChessComponent implements OnInit {
 
   x: string[] = ['a','b','c','d','e','f','g','h'];
   y: string[] = ['8','7','6','5','4','3','2','1'];
+  msg: string = '';
 
   private board: ICell[] = [];
+  private isWhiteNext: boolean = true;
+  private isGoFrom: boolean = true;
+  private step: IStep = { from: null, to: null };
 
   constructor() { 
     this.fillBoard();
   }
 
+  get colorOfNext(): string {
+    return (this.isWhiteNext) ? 'white' : 'black';
+  }
+
   ngOnInit(): void {
   }
 
+  onCellClick(x: number, y: number): void {
+    if (this.isGoFrom) {
+      this.setFrom(x, y);
+    }
+    else {
+      this.setTo(x, y);
+    }
+  }
+
   isCellWhite(x: number, y: number): boolean {
+    // board colorize
     return (x % 2 === 0 && y % 2 === 0) || (x % 2 !== 0 && y % 2 !== 0);
   }
 
@@ -53,6 +81,23 @@ export class ChessComponent implements OnInit {
     });
 
     return (cell && cell.figure)? cell.figure : null;
+  }
+
+  private setFrom(x: number, y: number): void {
+    const fig = this.getFigure(x, y);
+
+    if (fig && fig.color === this.colorOfNext) {
+      this.isGoFrom = !this.isGoFrom;
+      this.step.from = { x: x, y: y};
+      this.msg = this.colorOfNext + ': Click the next cell!';
+    }
+    else {
+      this.msg = 'This step is illegal! ' + this.colorOfNext + ' is next.';
+    }
+  }
+
+  private setTo(x: number, y: number): void {
+
   }
 
   private fillBoard(): void {

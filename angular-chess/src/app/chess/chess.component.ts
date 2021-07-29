@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 
+export interface IFigure {
+  name: string;
+  color: string;
+}
+
 @Component({
   selector: 'app-chess',
   templateUrl: './chess.component.html',
@@ -15,8 +20,27 @@ export class ChessComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  isWhite(x: number, y: number): boolean {
+  isCellWhite(x: number, y: number): boolean {
     return (x % 2 === 0 && y % 2 === 0) || (x % 2 !== 0 && y % 2 !== 0);
   }
 
+  figure(x: number, y: number): string {
+    const fig = this.getFigure(x, y);
+    
+    return (fig) ? fig.name : "";
+  }
+
+  colorOfFigure(x: number, y: number): string {
+    const fig = this.getFigure(x, y);
+    
+    return (fig) ? fig.color : "";
+  }
+
+  private getFigure(x: number, y: number): IFigure | null {
+    // test
+    if ((8 - y) === 7)
+      return { name: 'person', color: 'black'};
+
+    return null;
+  }
 }

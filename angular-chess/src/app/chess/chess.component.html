@@ -8,8 +8,8 @@
     </tr>
     <tr *ngFor="let row of y; let i = index;">
         <td>{{ row }}</td>
-        <td *ngFor="let td of x; let j = index;" [ngClass]="{'white': isWhite(j, i), 'black': !isWhite(j, i) }">
-            <span class="material-icons"></span>
+        <td *ngFor="let td of x; let j = index;" [ngClass]="{'white': isCellWhite(j, i), 'black': !isCellWhite(j, i) }">
+            <span class="material-icons" [ngClass]="colorOfFigure(j, i)">{{ figure(j, i) }}</span>
         </td>
         <td>{{ row }}</td>
     </tr>

@@ -1,0 +1,23 @@
+<table>
+    <tr>
+        <th></th>
+        <th *ngFor="let col of x">
+            {{ col }}
+        </th>
+        <th></th>
+    </tr>
+    <tr *ngFor="let row of y; let i = index;">
+        <td>{{ row }}</td>
+        <td *ngFor="let td of x; let j = index;" [ngClass]="{'white': isWhite(j, i), 'black': !isWhite(j, i) }">
+            <span class="material-icons"></span>
+        </td>
+        <td>{{ row }}</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td *ngFor="let col of x">
+            {{ col }}
+        </td>
+        <td></td>
+    </tr>
+</table>

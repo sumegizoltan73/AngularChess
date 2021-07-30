@@ -1,25 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
-export interface IFigure {
-  name: string;
-  color: string;
-}
-
-export interface ICell {
-  x: number;
-  y: number;
-  figure: IFigure | null;
-}
-
-export interface ICord {
-  x: number;
-  y: number;
-}
-
-export interface IStep {
-  from: ICord | null;
-  to: ICord | null;
-}
+import { ChessBase } from './chess-base.'
 
 @Component({
   selector: 'app-chess',
@@ -32,12 +12,13 @@ export class ChessComponent implements OnInit {
   y: string[] = ['8','7','6','5','4','3','2','1'];
   msg: string = '';
 
-  private board: ICell[] = [];
+  private chessBase: ChessBase;
   private isWhiteNext: boolean = true;
   private isGoFrom: boolean = true;
   private step: IStep = { from: null, to: null };
 
   constructor() { 
+    this.chessBase = ChessBase.instance;
     this.fillBoard();
   }
 
@@ -75,12 +56,7 @@ export class ChessComponent implements OnInit {
   }
 
   private getFigure(x: number, y: number): IFigure | null {
-    const cell = this.board.find(function (el) {
-      return el.x === x &&
-             el.y === (y);
-    });
-
-    return (cell && cell.figure)? cell.figure : null;
+    return this.chessBase.getFigure(x, y);
   }
 
   private setFrom(x: number, y: number): void {
@@ -105,7 +81,7 @@ export class ChessComponent implements OnInit {
     for (let i = 0; i < this.x.length; i++) {
       const element = this.x[i];
       // row 2 - Peasant
-      this.board.push({
+      this.chessBase.board.push({
         x: i,
         y: (8 - 2),
         figure: { name: "person", color: "white" }
@@ -114,7 +90,7 @@ export class ChessComponent implements OnInit {
       // row 1
       if (element === 'a' || element === 'h') {
         // Bastion
-        this.board.push({
+        this.chessBase.board.push({
           x: i,
           y: (8 - 1),
           figure: { name: "settings", color: "white" }
@@ -122,7 +98,7 @@ export class ChessComponent implements OnInit {
       }
       else if (element === 'b' || element === 'g') {
         // Colt
-        this.board.push({
+        this.chessBase.board.push({
           x: i,
           y: (8 - 1),
           figure: { name: "savings", color: "white" }
@@ -130,7 +106,7 @@ export class ChessComponent implements OnInit {
       }
       else if (element === 'c' || element === 'f') {
         // Runner
-        this.board.push({
+        this.chessBase.board.push({
           x: i,
           y: (8 - 1),
           figure: { name: "account_circle", color: "white" }
@@ -138,7 +114,7 @@ export class ChessComponent implements OnInit {
       }
       else if (element === 'd') {
         // Queen
-        this.board.push({
+        this.chessBase.board.push({
           x: i,
           y: (8 - 1),
           figure: { name: "grade", color: "white" }
@@ -146,7 +122,7 @@ export class ChessComponent implements OnInit {
       }
       else if (element === 'e') {
         // King
-        this.board.push({
+        this.chessBase.board.push({
           x: i,
           y: (8 - 1),
           figure: { name: "engineering", color: "white" }
@@ -159,7 +135,7 @@ export class ChessComponent implements OnInit {
     for (let i = 0; i < this.x.length; i++) {
       const element = this.x[i];
       // row 7 - Peasant
-      this.board.push({
+      this.chessBase.board.push({
         x: i,
         y: (8 - 7),
         figure: { name: "person", color: "black" }
@@ -168,7 +144,7 @@ export class ChessComponent implements OnInit {
       // row 8
       if (element === 'a' || element === 'h') {
         // Bastion
-        this.board.push({
+        this.chessBase.board.push({
           x: i,
           y: (8 - 8),
           figure: { name: "settings", color: "black" }
@@ -176,7 +152,7 @@ export class ChessComponent implements OnInit {
       }
       else if (element === 'b' || element === 'g') {
         // Colt
-        this.board.push({
+        this.chessBase.board.push({
           x: i,
           y: (8 - 8),
           figure: { name: "savings", color: "black" }
@@ -184,7 +160,7 @@ export class ChessComponent implements OnInit {
       }
       else if (element === 'c' || element === 'f') {
         // Runner
-        this.board.push({
+        this.chessBase.board.push({
           x: i,
           y: (8 - 8),
           figure: { name: "account_circle", color: "black" }
@@ -192,7 +168,7 @@ export class ChessComponent implements OnInit {
       }
       else if (element === 'd') {
         // Queen
-        this.board.push({
+        this.chessBase.board.push({
           x: i,
           y: (8 - 8),
           figure: { name: "grade", color: "black" }
@@ -200,7 +176,7 @@ export class ChessComponent implements OnInit {
       }
       else if (element === 'e') {
         // King
-        this.board.push({
+        this.chessBase.board.push({
           x: i,
           y: (8 - 8),
           figure: { name: "engineering", color: "black" }

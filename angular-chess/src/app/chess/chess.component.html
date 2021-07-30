@@ -11,7 +11,7 @@
         <td *ngFor="let td of x; let j = index;" 
                 [ngClass]="{'white': isCellWhite(j, i), 'black': !isCellWhite(j, i) }"
                 (click)="onCellClick(j, i)">
-            <span class="material-icons" [ngClass]="colorOfFigure(j, i)">{{ figureIcon(j, i) }}</span>
+            <span class="chess-icons" [ngClass]="classNameOfFigure(j, i)"></span>
         </td>
         <td>{{ row }}</td>
     </tr>

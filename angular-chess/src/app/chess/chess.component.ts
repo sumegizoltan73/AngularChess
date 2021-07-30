@@ -45,16 +45,16 @@ export class ChessComponent implements OnInit {
     return (x % 2 === 0 && y % 2 === 0) || (x % 2 !== 0 && y % 2 !== 0);
   }
 
-  figureIcon(x: number, y: number): string {
-    const fig = this.getFigure(x, y);
-    
-    return (fig) ? fig.icon : "";
-  }
-
   colorOfFigure(x: number, y: number): string {
     const fig = this.getFigure(x, y);
     
     return (fig) ? fig.color : "";
+  }
+
+  classNameOfFigure(x: number, y: number): string {
+    const fig = this.getFigure(x, y);
+    
+    return (fig) ? fig.color + " " + fig.name : "";
   }
 
   private getFigure(x: number, y: number): IFigure | null {
@@ -75,28 +75,30 @@ export class ChessComponent implements OnInit {
   }
 
   private setTo(x: number, y: number): void {
-
+    this.step.to = { x: x, y: y};
+    const chessBase = ChessBase.instance;
+    chessBase.stepAwayIfPossible(this.step);
   }
 
   private fillBoard(): void {
     //init white figures
     for (let i = 0; i < this.x.length; i++) {
       const element = this.x[i];
-      // row 2 - Peasant
-      ChessFactory.createFigure("peasant", "white", i, (8 - 2));
+      // row 2 - Pawn
+      ChessFactory.createFigure("pawn", "white", i, (8 - 2));
 
       // row 1
       if (element === 'a' || element === 'h') {
-        // Bastion
-        ChessFactory.createFigure("bastion", "white", i, (8 - 1));
+        // Rook
+        ChessFactory.createFigure("rook", "white", i, (8 - 1));
       }
       else if (element === 'b' || element === 'g') {
-        // Colt
-        ChessFactory.createFigure("colt", "white", i, (8 - 1));
+        // Knight
+        ChessFactory.createFigure("knight", "white", i, (8 - 1));
       }
       else if (element === 'c' || element === 'f') {
-        // Runner
-        ChessFactory.createFigure("runner", "white", i, (8 - 1));
+        // Bishop
+        ChessFactory.createFigure("bishop", "white", i, (8 - 1));
       }
       else if (element === 'd') {
         // Queen
@@ -112,21 +114,21 @@ export class ChessComponent implements OnInit {
     //init black figures
     for (let i = 0; i < this.x.length; i++) {
       const element = this.x[i];
-      // row 7 - Peasant
-      ChessFactory.createFigure("peasant", "black", i, (8 - 7));
+      // row 7 - Pawn
+      ChessFactory.createFigure("pawn", "black", i, (8 - 7));
 
       // row 8
       if (element === 'a' || element === 'h') {
-        // Bastion
-        ChessFactory.createFigure("bastion", "black", i, (8 - 8));
+        // Rook
+        ChessFactory.createFigure("rook", "black", i, (8 - 8));
       }
       else if (element === 'b' || element === 'g') {
-        // Colt
-        ChessFactory.createFigure("colt", "black", i, (8 - 8));
+        // Knight
+        ChessFactory.createFigure("knight", "black", i, (8 - 8));
       }
       else if (element === 'c' || element === 'f') {
-        // Runner
-        ChessFactory.createFigure("runner", "black", i, (8 - 8));
+        // Bishop
+        ChessFactory.createFigure("bishop", "black", i, (8 - 8));
       }
       else if (element === 'd') {
         // Queen

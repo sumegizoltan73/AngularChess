@@ -1,8 +1,8 @@
 import { ChessBase } from './chess-base.';
-import { FigurePeasant } from './chess-figure-peasant';
-import { FigureBastion } from './chess-figure-bastion';
-import { FigureColt } from './chess-figure-colt';
-import { FigureRunner } from './chess-figure-runner';
+import { FigurePawn } from './chess-figure-pawn';
+import { FigureRook } from './chess-figure-rook';
+import { FigureKnight } from './chess-figure-knight';
+import { FigureBishop } from './chess-figure-bishop';
 import { FigureQueen } from './chess-figure-queen';
 import { FigureKing } from './chess-figure-king';
 
@@ -12,16 +12,16 @@ export class ChessFactory {
         const chessBase = ChessBase.instance;
 
         switch (type) {
-            case 'bastion':
-                fig = new FigureBastion(color);
+            case 'rook':
+                fig = new FigureRook(color);
                 break;
 
-            case 'colt':
-                fig = new FigureColt(color);
+            case 'knight':
+                fig = new FigureKnight(color);
                 break;
 
-            case 'runner':
-                fig = new FigureRunner(color);
+            case 'bishop':
+                fig = new FigureBishop(color);
                 break;
 
             case 'queen':
@@ -33,7 +33,7 @@ export class ChessFactory {
                 break;
         
             default:
-                fig = new FigurePeasant(color);
+                fig = new FigurePawn(color);
                 break;
         }
 

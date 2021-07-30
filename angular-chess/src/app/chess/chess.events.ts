@@ -18,7 +18,7 @@ export class ChessEvents {
 
     }
 
-    subscribe(type: string, complete: ((eventArgs?: any) => void), gridId?: string): void {
+    subscribe(type: string, complete: ((eventArgs?: any) => void)): void {
         let e = this.getEventEmitter(type);
         if (!e) {
             e = new TypifiedEventEmitter(type);
@@ -28,7 +28,7 @@ export class ChessEvents {
         e.eventEmitter.subscribe(complete);
     }
 
-    emit(type: string, eventArgs?: any, gridId?: string): void {
+    emit(type: string, eventArgs?: any): void {
         let e = this.getEventEmitter(type);
         if (e) {
             e.eventEmitter.emit(eventArgs);

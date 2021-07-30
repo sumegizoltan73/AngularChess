@@ -1,7 +1,6 @@
 
 interface IFigure {
     name: string;
-    icon: string;
     color: string;
 }
   

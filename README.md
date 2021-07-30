@@ -1,26 +1,6 @@
 # AngularChess
 
-## Ikonok (HU)
-
-Material ikonjai kerültek felhasználásra a következők szerint:
-
-- Paraszt  \- person
-- Bástya   \- settings 
-- Csikó    \- savings
-- Futó     \- account_circle
-- Királynő \- grade
-- Király   \- engineering
-
-## Icons (EN)
-
-Material icons were used as follows:
-
-- Peasant  \- person
-- Bastion  \- settings 
-- Colt     \- savings
-- Runner   \- account_circle
-- Queen    \- grade
-- King     \- engineering
+![Angular Chess](/angular-chess/src/assets/chess_3.PNG)
 
 ## Működés
 
@@ -36,6 +16,5 @@ Nem megfelelő lépés, vagy nem felelő színnel történő lépés esetén a p
 - A lépések listaszerű megjelenítése a játék végéig,
 - A lépések sakkjátékok hivatalos jelölésével történő megjelenítése,
 - Beépített Chat ablakon keresztül, az üzenetekkel vezérelt játék (kattintás alapú vezérlés mellett),
-- Blazor hybrid app-ként történő megjelenítés a kliens oldali kódot felhasználva (minden platformra),
-- Saját ikonkészlet. 
+- Blazor hybrid app-ként történő megjelenítés a kliens oldali kódot felhasználva (minden platformra).
  

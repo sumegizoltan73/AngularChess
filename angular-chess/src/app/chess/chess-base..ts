@@ -33,4 +33,21 @@ export class ChessBase {
     
         return (cell && cell.figure)? cell.figure : null;
     }
+
+    stepAwayIfPossible(step: IStep): void {
+        const isPossible = true;
+
+        if (isPossible) {
+            const arg = this.stateAfterStep(step);
+            this.events.emit('stepFinished', null);
+        }
+        else {
+            this.events.emit('stepIllegal', null);
+        }
+    }
+
+    stateAfterStep(step: IStep): any {
+
+    }
+
 }

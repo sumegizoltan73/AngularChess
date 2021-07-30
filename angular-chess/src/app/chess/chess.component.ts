@@ -16,7 +16,7 @@ export class ChessComponent implements OnInit {
 
   private chessBase: ChessBase;
   private isWhiteNext: boolean = true;
-  private isGoFrom: boolean = true;
+  private isClickedFrom: boolean = true;
   private step: IStep = { from: null, to: null };
 
   constructor() { 
@@ -44,7 +44,7 @@ export class ChessComponent implements OnInit {
   }
 
   onCellClick(x: number, y: number): void {
-    if (this.isGoFrom) {
+    if (this.isClickedFrom) {
       this.setFrom(x, y);
     }
     else {
@@ -72,14 +72,14 @@ export class ChessComponent implements OnInit {
   private clearStep(): void {
     this.msg = 'This step is illegal! ' + this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
     this.step = { from: null, to: null };
-    this.isGoFrom = !this.isGoFrom;
+    this.isClickedFrom = !this.isClickedFrom;
   }
 
   private onStep(eventArgs: any): void {
     // TODO: add step to list
 
     this.step = { from: null, to: null };
-    this.isGoFrom = !this.isGoFrom;
+    this.isClickedFrom = !this.isClickedFrom;
     this.isWhiteNext = !this.isWhiteNext;
     this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
   }
@@ -92,7 +92,7 @@ export class ChessComponent implements OnInit {
     const fig = this.getFigure(x, y);
 
     if (fig && fig.color === this.colorOfNext) {
-      this.isGoFrom = !this.isGoFrom;
+      this.isClickedFrom = !this.isClickedFrom;
       this.step.from = { x: x, y: y};
       this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ': Click the next cell!';
     }

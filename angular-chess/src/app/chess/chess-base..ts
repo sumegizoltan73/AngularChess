@@ -73,7 +73,7 @@ export class ChessBase {
             if (figToMaybeKing && figToMaybeKing.name === 'king') {
                 const xOfKingTo = (step.from!.x < step.to!.x) ? step.to!.x - 1 : step.to!.x + 1;
                 _retVal = { 
-                    status: 'castling', 
+                    state: 'castling', 
                     additionalStep: { 
                         from: { x: xOfKing, y: step.from?.y }, 
                         to: { x: xOfKingTo, y: step.from?.y }

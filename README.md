@@ -11,6 +11,14 @@ Felváltva kell lépni, először a fehér léphet.
 
 Nem megfelelő lépés, vagy nem felelő színnel történő lépés esetén a program üzenetet jelenít meg, és figyelmen kívül hagyja a lépést.
 
+### Berosálás (Castling)
+
+A bástyával kell lépni, és a király melleti kockát kell megadni célként. A program ekkor végrehajtja a rosálást, feltéve hogy nem sakkban áll a király.
+
+### Gyalog elfogás (En passant)
+Ha a gyalog a kezdő pozicíóból kettőt lép előre úgy, hogy előtte az ellenfél gyalogja van, és mellé is az ellenfél gyalogja kerül így, akkor az ellenfél a következő lépésben (és 
+csak abban a lépésben) el foghatja a gyalogot úgy, hogy a mellete lévő pozicióból átlósan mögé lép. A program az elfogás lépését szabályos lépésként dolgozza fel.
+
 ## Továbbfejlesztési lehetőség
 
 - A lépések listaszerű megjelenítése a játék végéig,

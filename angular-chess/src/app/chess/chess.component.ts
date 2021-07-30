@@ -21,11 +21,23 @@ export class ChessComponent implements OnInit {
 
   constructor() { 
     this.chessBase = ChessBase.instance;
+    
+    this.chessBase.events.subscribe('stepFinished', (eventArgs: any) => { this.onStep(eventArgs); });
+    this.chessBase.events.subscribe('stepIllegal', () => { this.clearStep(); });
+
     this.fillBoard();
   }
 
   get colorOfNext(): string {
     return (this.isWhiteNext) ? 'white' : 'black';
+  }
+
+  get isCheckToWhite(): boolean {
+    return this.chessBase.isCheckToWhite;
+  }
+
+  get isCheckToBlack(): boolean {
+    return this.chessBase.isCheckToBlack;
   }
 
   ngOnInit(): void {
@@ -55,6 +67,21 @@ export class ChessComponent implements OnInit {
     const fig = this.getFigure(x, y);
     
     return (fig) ? fig.color + " " + fig.name : "";
+  }
+
+  private clearStep(): void {
+    this.msg = 'This step is illegal! ' + this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
+    this.step = { from: null, to: null };
+    this.isGoFrom = !this.isGoFrom;
+  }
+
+  private onStep(eventArgs: any): void {
+    // TODO: add step to list
+
+    this.step = { from: null, to: null };
+    this.isGoFrom = !this.isGoFrom;
+    this.isWhiteNext = !this.isWhiteNext;
+    this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
   }
 
   private getFigure(x: number, y: number): IFigure | null {

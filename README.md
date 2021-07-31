@@ -24,5 +24,14 @@ csak abban a lépésben) el foghatja a gyalogot úgy, hogy a mellete lévő pozi
 - A lépések listaszerű megjelenítése a játék végéig,
 - A lépések sakkjátékok hivatalos jelölésével történő megjelenítése,
 - Beépített Chat ablakon keresztül, az üzenetekkel vezérelt játék (kattintás alapú vezérlés mellett),
+- Játékok párosítása,
+- Párosított játékok esetén webservice-n keresztüli kétirányú vezérlés (a távoli fél a saját példányán kattintva vezérli),
+- Időmérő, színenként külön méréssel,
+- Chat lista és lépés lista külön,
+- Mac address + UUID alapú azonosítás,
+- Játék mentése és visszatöltése,
+- Visszatöltés szinkronizálása párosítás esetén,
+- Mentés továbbítása email-en,
+- Játékmenet online megosztása csak nézésre, 
 - Blazor hybrid app-ként történő megjelenítés a kliens oldali kódot felhasználva (minden platformra).
  

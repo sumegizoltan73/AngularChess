@@ -1,4 +1,3 @@
-import { basename } from "path";
 import { Figure } from "./chess-figure";
 
 export class FigureRook extends Figure implements IFigure {

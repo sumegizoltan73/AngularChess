@@ -30,8 +30,13 @@ export class Figure {
     }
 
     protected isCoordsNotEquals(step: IStep): boolean {
-        
-        return true;
+        let _retVal = true;
+
+        if (step.from!.x === step.to!.x && step.from!.y === step.to!.y) {
+            _retVal = false;
+        }
+
+        return _retVal;
     }
 
     protected isOneCellStep(step: IStep): boolean {

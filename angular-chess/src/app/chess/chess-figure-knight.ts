@@ -21,7 +21,6 @@ export class FigureKnight extends Figure implements IFigure {
     private isKnightStep(step: IStep): boolean {
         let _retVal = false;
 
-
         if ((Math.abs(step.to!.x - step.from!.x) === 2 && Math.abs(step.to!.y - step.from!.y) === 1 )
                 || (Math.abs(step.to!.x - step.from!.x) === 1 && Math.abs(step.to!.y - step.from!.y) === 2 )) {
             _retVal = true;

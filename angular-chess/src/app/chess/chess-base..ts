@@ -1,3 +1,4 @@
+import { FigureKing } from './chess-figure-king';
 import { ChessEvents } from './chess.events'
 
 // Singleton class for IBoard items, and events
@@ -72,14 +73,16 @@ export class ChessBase {
             const xOfKing = (step.from!.x < step.to!.x) ? step.to!.x + 1 : step.to!.x - 1;
             const figToMaybeKing = this.getFigure(xOfKing, step.to!.y);
             if (figToMaybeKing && figToMaybeKing.name === 'king') {
-                const xOfKingTo = (step.from!.x < step.to!.x) ? step.to!.x - 1 : step.to!.x + 1;
-                _retVal = { 
-                    state: 'castling', 
-                    additionalStep: { 
-                        from: { x: xOfKing, y: step.from?.y }, 
-                        to: { x: xOfKingTo, y: step.from?.y }
-                    } 
-                };
+                if ((<FigureKing> figToMaybeKing).isOrigPosition({ from: { x: xOfKing, y: step.from!.y }, to: null })) {
+                    const xOfKingTo = (step.from!.x < step.to!.x) ? step.to!.x - 1 : step.to!.x + 1;
+                    _retVal = { 
+                        state: 'castling', 
+                        additionalStep: { 
+                            from: { x: xOfKing, y: step.from!.y }, 
+                            to: { x: xOfKingTo, y: step.from!.y }
+                        } 
+                    };
+                }
             }
         }
 

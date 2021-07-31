@@ -8,10 +8,11 @@ export class FigureKing extends Figure implements IFigure {
 
     isStepPossible(step: IStep): boolean {
         let _retVal = false;
-        
+        const isCastling = this.isCastling(step);
+
         if (this.isCoordsNotEquals(step)
-                && this.isStepNotBlocked(step)
-                && (this.isOneCellStep(step) || this.isCastling(step))) {
+                && (this.isStepNotBlocked(step) || isCastling)
+                && (this.isOneCellStep(step) || isCastling)) {
             _retVal = true;
         }
 
@@ -20,7 +21,26 @@ export class FigureKing extends Figure implements IFigure {
 
     private isCastling(step: IStep): boolean {
         // orig_pos && castling
-        return false;
+        let _retVal = false;
+
+        if (this.isOrigPosition(step)) {
+            console.log('isOrigpos');
+            const stepOffset = Math.abs(step.to!.x - step.from!.x);
+            const rookOffset = (step.to!.x > step.from!.x) ? 1 : -1;
+            const rookX = step.from!.x + rookOffset;
+            const fig = this.chessBase.getFigure(rookX, step.from!.y);
+            
+            if ((stepOffset === 2) && fig && fig.name === 'rook' && fig.color === this.color) {
+                _retVal = true;
+            }
+        } 
+
+        return _retVal;
+    }
+
+    isOrigPosition(step: IStep): boolean {
+        return (this.color === 'white' && step.from!.y === 7 && step.from!.x === 4) 
+                || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 4);
     }
 
 }

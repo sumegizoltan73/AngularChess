@@ -83,7 +83,8 @@ export class Figure {
 
     protected isOneCellStep(step: IStep): boolean {
         // king, pawn
-        return true;
+        
+        return ((Math.abs(step.to!.y - step.from!.y) < 2) && (Math.abs(step.to!.x - step.from!.x) < 2));
     }
 
     protected isLinearStep(step: IStep): boolean {

@@ -6,4 +6,10 @@ export class FigureBishop implements IFigure {
 
     }
 
+    isStepPossible(step: IStep): boolean {
+        // if (from !== to && (...))
+        
+        return true;
+    }
+
 }

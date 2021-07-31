@@ -40,7 +40,8 @@ export class ChessBase {
     }
 
     stepAwayIfPossible(step: IStep): void {
-        const isPossible = true;
+        const fig = this.getFigure(step.from!.x, step.from!.y);
+        const isPossible = fig?.isStepPossible(step);
 
         if (isPossible) {
             if (this.enPassant) {

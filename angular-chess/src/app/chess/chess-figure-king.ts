@@ -6,4 +6,10 @@ export class FigureKing implements IFigure {
 
     }
 
+    isStepPossible(step: IStep): boolean {
+        // if (from !== to && (...))
+        
+        return true;
+    }
+
 }

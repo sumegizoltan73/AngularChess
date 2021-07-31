@@ -6,4 +6,10 @@ export class FigureKnight implements IFigure {
 
     }
 
+    isStepPossible(step: IStep): boolean {
+        // if (from !== to && (...))
+        
+        return true;
+    }
+
 }

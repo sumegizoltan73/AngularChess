@@ -6,4 +6,10 @@ export class FigureRook implements IFigure {
 
     }
 
+    isStepPossible(step: IStep): boolean {
+        // if (from !== to && (from.y === to.y || from.x === to.x))
+        
+        return true;
+    }
+
 }

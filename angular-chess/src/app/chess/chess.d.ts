@@ -2,6 +2,7 @@
 interface IFigure {
     name: string;
     color: string;
+    isStepPossible(step: IStep): boolean;
 }
   
 interface ICell {

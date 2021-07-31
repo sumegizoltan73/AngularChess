@@ -95,8 +95,7 @@ export class Figure {
     protected isDiagonalStep(step: IStep): boolean {
         // bishop, queen
 
-        // (to.y - from.y) === (to.x - from.x)
-        return true;
+        return (Math.abs(step.to!.y - step.from!.y) === Math.abs(step.to!.x - step.from!.x));
     }
 
 }

@@ -14,8 +14,39 @@ export class Figure {
         if (!this.isCellToNotBlockedBySameFigure(step) || (!this.isCellToNotBlockedByEnemyKing(step))) {
             _retVal = false;
         }
+        else {
+            const increaseX = this.getIncreaseX(step);
+            const increaseY = this.getIncreaseY(step);
+            let x: number = step.from!.x;
+            let y: number = step.from!.y;
+            let fig: IFigure | null = null;
+            let processNext: boolean = true;
+
+            while(_retVal && processNext) {
+                x += increaseX;
+                y += increaseY;
+                if (step.to!.x === x && step.to!.y === y) {
+                    processNext = false;
+                }
+                else {
+                    fig = this.chessBase.getFigure(x, y);
+                    if (fig) {
+                        processNext = false;
+                        _retVal = false;
+                    }
+                } 
+            }
+        }
 
         return _retVal;
+    }
+
+    protected getIncreaseX(step: IStep): number {
+        return (step.to!.x > step.from!.x) ? 1 : (step.to!.x === step.from!.x) ? 0 : -1;
+    }
+
+    protected getIncreaseY(step: IStep): number {
+        return (step.to!.y > step.from!.y) ? 1 : (step.to!.y === step.from!.y) ? 0 : -1;
     }
 
     protected isCellToNotBlockedBySameFigure(step: IStep): boolean {
@@ -58,8 +89,7 @@ export class Figure {
     protected isLinearStep(step: IStep): boolean {
         // rook, queen
 
-        // from.y === to.y || from.x === to.x
-        return true;
+        return (step.from!.y === step.to!.y || step.from!.x === step.to!.x);
     }
 
     protected isDiagonalStep(step: IStep): boolean {

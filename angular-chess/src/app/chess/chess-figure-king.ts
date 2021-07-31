@@ -1,15 +1,26 @@
+import { Figure } from "./chess-figure";
 
-export class FigureKing implements IFigure {
-    name: string = 'king';
+export class FigureKing extends Figure implements IFigure {
     
-    constructor(public color: string){
-
+    constructor(color: string){
+        super('king', color);
     }
 
     isStepPossible(step: IStep): boolean {
-        // if (from !== to && (...))
+        let _retVal = false;
         
-        return true;
+        if (this.isCoordsNotEquals(step)
+                && this.isStepNotBlocked(step)
+                && (this.isOneCellStep(step) || this.isCastling(step))) {
+            _retVal = true;
+        }
+
+        return _retVal;
+    }
+
+    private isCastling(step: IStep): boolean {
+        // orig_pos && castling
+        return false;
     }
 
 }

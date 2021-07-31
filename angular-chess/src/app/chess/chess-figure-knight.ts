@@ -1,15 +1,19 @@
+import { Figure } from "./chess-figure";
 
-export class FigureKnight implements IFigure {
-    name: string = 'knight';
+export class FigureKnight extends Figure implements IFigure {
     
-    constructor(public color: string){
-
+    constructor(color: string){
+        super('knight', color);
     }
 
     isStepPossible(step: IStep): boolean {
-        // if (from !== to && (...))
+        let _retVal = false;
         
-        return true;
+        if (this.isCoordsNotEquals(step) ) {
+            _retVal = true;
+        }
+
+        return _retVal;
     }
 
 }

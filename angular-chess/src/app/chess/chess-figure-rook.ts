@@ -1,15 +1,22 @@
+import { basename } from "path";
+import { Figure } from "./chess-figure";
 
-export class FigureRook implements IFigure {
-    name: string = 'rook';
+export class FigureRook extends Figure implements IFigure {
     
-    constructor(public color: string){
-
+    constructor(color: string){
+        super('rook', color);
     }
 
     isStepPossible(step: IStep): boolean {
-        // if (from !== to && (from.y === to.y || from.x === to.x))
+        let _retVal = false;
         
-        return true;
+        if (this.isCoordsNotEquals(step) 
+                && this.isStepNotBlocked(step)
+                && this.isLinearStep(step)) {
+            _retVal = true;
+        }
+
+        return _retVal;
     }
 
 }

@@ -11,7 +11,8 @@ export class FigureKnight extends Figure implements IFigure {
         
         if (this.isCoordsNotEquals(step)
                 && this.isKnightStep(step)
-                && this.isCellToNotBlockedBySameFigure(step)) {
+                && this.isCellToNotBlockedBySameFigure(step)
+                && this.isCellToNotBlockedByEnemyKing(step)) {
             _retVal = true;
         }
 

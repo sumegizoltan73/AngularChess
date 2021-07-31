@@ -11,7 +11,7 @@ export class Figure {
     protected isStepNotBlocked(step: IStep): boolean {
         let _retVal = true;
 
-        if (!this.isCellToNotBlockedBySameFigure(step)) {
+        if (!this.isCellToNotBlockedBySameFigure(step) || (!this.isCellToNotBlockedByEnemyKing(step))) {
             _retVal = false;
         }
 
@@ -23,6 +23,17 @@ export class Figure {
         const figTo = this.chessBase.getFigure(step.to!.x, step.to!.y);
 
         if (figTo && figTo.color === this.color){ 
+            _retVal = false;
+        }
+
+        return _retVal;
+    }
+
+    protected isCellToNotBlockedByEnemyKing(step: IStep): boolean {
+        let _retVal = true;
+        const figTo = this.chessBase.getFigure(step.to!.x, step.to!.y);
+
+        if (figTo && (figTo.color !== this.color) && (figTo.name === 'king')){ 
             _retVal = false;
         }
 

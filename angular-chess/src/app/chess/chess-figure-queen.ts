@@ -8,8 +8,10 @@ export class FigureQueen extends Figure implements IFigure {
 
     isStepPossible(step: IStep): boolean {
         let _retVal = false;
-        // if (from !== to && (from.y === to.y || from.x === to.x || ... (to.y - from.y) === (to.x - from.x) ))
-        if (this.isCoordsNotEquals(step) && this.isStepNotBlocked(step)) {
+        
+        if (this.isCoordsNotEquals(step) 
+                && this.isStepNotBlocked(step)
+                && (this.isLinearStep(step) || this.isDiagonalStep(step))) {
             _retVal = true;
         }
 

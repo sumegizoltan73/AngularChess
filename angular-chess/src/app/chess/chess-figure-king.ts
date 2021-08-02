@@ -1,6 +1,8 @@
 import { Figure } from "./chess-figure";
 
 export class FigureKing extends Figure implements IFigure {
+
+    isMoved: boolean = false;
     
     constructor(color: string){
         super('king', color);
@@ -24,7 +26,6 @@ export class FigureKing extends Figure implements IFigure {
         let _retVal = false;
 
         if (this.isOrigPosition(step)) {
-            console.log('isOrigpos');
             const stepOffset = Math.abs(step.to!.x - step.from!.x);
             const rookOffset = (step.to!.x > step.from!.x) ? 1 : -1;
             const rookX = step.from!.x + rookOffset;
@@ -39,8 +40,8 @@ export class FigureKing extends Figure implements IFigure {
     }
 
     isOrigPosition(step: IStep): boolean {
-        return (this.color === 'white' && step.from!.y === 7 && step.from!.x === 4) 
-                || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 4);
+        return !this.isMoved && ((this.color === 'white' && step.from!.y === 7 && step.from!.x === 4) 
+                || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 4));
     }
 
 }

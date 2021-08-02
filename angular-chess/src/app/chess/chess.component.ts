@@ -24,6 +24,7 @@ export class ChessComponent implements OnInit {
     
     this.chessBase.events.subscribe('stepFinished', (eventArgs: any) => { this.onStep(eventArgs); });
     this.chessBase.events.subscribe('stepIllegal', () => { this.clearStep(); });
+    this.chessBase.events.subscribe('promotionFinished', () => { this.onPromotion(); });
 
     this.fillBoard();
   }
@@ -40,16 +41,40 @@ export class ChessComponent implements OnInit {
     return this.chessBase.isCheckToBlack;
   }
 
+  get isPromoteWhite(): boolean {
+    return this.chessBase.isPawnPromotionWhite;
+  }
+
+  get isPromoteBlack(): boolean {
+    return this.chessBase.isPawnPromotionBlack;
+  }
+
+  get blackPromotionList(): string[] {
+    return this.chessBase.blackPromotionList;
+  }
+
+  get whitePromotionList(): string[] {
+    return this.chessBase.whitePromotionList;
+  }
+
   ngOnInit(): void {
   }
 
   onCellClick(x: number, y: number): void {
-    if (this.isClickedFrom) {
-      this.setFrom(x, y);
+    if (!(this.isPromoteWhite || this.isPromoteBlack)) {
+      if (this.isClickedFrom) {
+        this.setFrom(x, y);
+      }
+      else {
+        this.setTo(x, y);
+      }
     }
-    else {
-      this.setTo(x, y);
-    }
+  }
+
+  onPromotionClick(name: string, i: number): void {
+    const color = (this.isPromoteWhite) ? 'white' : 'black';
+    
+    this.chessBase.convertPawn(name, color, this.step, i);
   }
 
   isCellWhite(x: number, y: number): boolean {
@@ -69,6 +94,10 @@ export class ChessComponent implements OnInit {
     return (fig) ? fig.color + " " + fig.name : "";
   }
 
+  classNameOfPromotion(name: string, color: string): string {
+    return color + " " + name;
+  }
+
   private clearStep(): void {
     this.msg = 'This step is illegal! ' + this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
     this.step = { from: null, to: null };
@@ -78,10 +107,19 @@ export class ChessComponent implements OnInit {
   private onStep(eventArgs: any): void {
     // TODO: add step to list
 
-    this.step = { from: null, to: null };
-    this.isClickedFrom = !this.isClickedFrom;
-    this.isWhiteNext = !this.isWhiteNext;
-    this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
+    if (eventArgs && eventArgs.state === 'pawn_promotion') {
+      this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next. Convert pawn to other!';
+    }
+    else {
+      this.step = { from: null, to: null };
+      this.isClickedFrom = !this.isClickedFrom;
+      this.isWhiteNext = !this.isWhiteNext;
+      this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
+    }
+  }
+
+  private onPromotion(): void {
+    this.onStep(null);
   }
 
   private getFigure(x: number, y: number): IFigure | null {

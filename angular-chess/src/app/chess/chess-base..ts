@@ -1,6 +1,7 @@
 import { FigureKing } from './chess-figure-king';
 import { FigurePawn } from './chess-figure-pawn';
 import { ChessEvents } from './chess.events'
+import { ChessFactory } from './chess.factory';
 
 // Singleton class for IBoard items, and events
 export class ChessBase {
@@ -10,13 +11,15 @@ export class ChessBase {
     private revertFigureBuffer: ICell | null = null;
     private revertStepBuffer: IStep | null = null;
     private prisonerRemoved: boolean = false;
-    private whitePromotionList: string[] = [];
-    private blackPromotionList: string[] = [];
 
     events: ChessEvents;
     board: ICell[] = [];
     
     enPassant: any = null;
+    whitePromotionList: string[] = [];
+    blackPromotionList: string[] = [];
+    isPawnPromotionWhite: boolean = false;
+    isPawnPromotionBlack: boolean = false;
     isCheckToWhite: boolean = false;
     isCheckToBlack: boolean = false;
 
@@ -70,6 +73,14 @@ export class ChessBase {
             else if (arg && arg.state === 'en_passant_position') {
                 this.enPassant = arg.enPassant;
             }
+            else if (arg && arg.state === 'pawn_promotion') {
+                if (fig && fig.color === 'white') {
+                    this.isPawnPromotionWhite = true;
+                }
+                else {
+                    this.isPawnPromotionBlack = true;
+                }
+            }
 
             this.events.emit('stepFinished', arg);
         }
@@ -103,8 +114,8 @@ export class ChessBase {
         }
 
         if (figFrom?.name === 'pawn') {
-            // is en_passant_position?
             if ((<FigurePawn> figFrom).isMovedToEnPassantPosition(step)) {
+                // en_passant_position
                 const offsetY = (step.to!.y > step.from!.y) ? -1 : 1;
                 _retVal = { 
                     state: 'en_passant_position', 
@@ -114,9 +125,32 @@ export class ChessBase {
                     } 
                 };
             }
+            else if ((figFrom.color === 'white' && step.to!.y === 0 && this.whitePromotionList.length > 0)
+                    || figFrom.color === 'black' && step.to!.y === 7 && this.blackPromotionList.length > 0) {
+                // pawn promotion
+                _retVal = { 
+                    state: 'pawn_promotion'
+                };
+            }
         }
 
         return _retVal;
+    }
+
+    convertPawn(name: string, color: string, step: IStep, i: number): void {
+        if (color === 'white') {
+            this.isPawnPromotionWhite = false;
+            this.whitePromotionList.splice(i, 1);
+        }
+        else {
+            this.isPawnPromotionBlack = false;
+            this.blackPromotionList.splice(i, 1);
+        }
+        
+        this.removeFigure(step.to!.x, step.to!.y);
+        ChessFactory.createFigure(name, color, step.to!.x, step.to!.y);
+
+        this.events.emit('promotionFinished', null);
     }
     
     private removePrisoner(): void {

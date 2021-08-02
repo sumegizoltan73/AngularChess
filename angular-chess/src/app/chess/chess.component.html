@@ -1,5 +1,11 @@
 <div class="check-info" *ngIf="isCheckToBlack"><span>Check!</span></div>
 
+<div class="promotion-list" *ngIf="isPromoteWhite">
+    <span class="chess-icons" *ngFor="let name of whitePromotionList; let i=index;" 
+        [ngClass]="classNameOfPromotion(name, 'white')"
+        (click)="onPromotionClick(name, i)"></span>
+</div>
+
 <table>
     <tr>
         <th></th>
@@ -25,6 +31,12 @@
         <td></td>
     </tr>
 </table>
+
+<div class="promotion-list promotion-black" *ngIf="isPromoteBlack">
+    <span class="chess-icons" *ngFor="let name of blackPromotionList; let i=index;" 
+        [ngClass]="classNameOfPromotion(name, 'black')"
+        (click)="onPromotionClick(name, i)"></span>
+</div>
 
 <div class="check-info" *ngIf="isCheckToWhite"><span>Check!</span></div>
 

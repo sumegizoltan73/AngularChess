@@ -108,7 +108,7 @@ export class ChessComponent implements OnInit {
     // TODO: add step to list
 
     if (eventArgs && eventArgs.state === 'pawn_promotion') {
-      this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next. Convert pawn to other!';
+      this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next. Convert the pawn to another!';
     }
     else {
       this.step = { from: null, to: null };

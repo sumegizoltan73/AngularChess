@@ -9,7 +9,6 @@ export class ChessBase {
     private static _instance?: ChessBase;
 
     private revertFigureBuffer: ICell | null = null;
-    private revertStepBuffer: IStep | null = null;
     private prisonerRemoved: boolean = false;
     private checkFiguresWithCell: ICell[] = [];
 
@@ -243,7 +242,44 @@ export class ChessBase {
     }
 
     private revertStep(step: IStep): void {
-        // TODO: revert step
+        const fig = this.getFigure(step.to!.x, step.to!.y);
+        
+        this.removeFigure(step.to!.x, step.to!.y);
+        this.board.push({
+            x: step.from!.x,
+            y: step.from!.y,
+            figure: fig
+        });
+
+        if (this.revertFigureBuffer) {
+            this.board.push({
+                x: this.revertFigureBuffer.x,
+                y: this.revertFigureBuffer.y,
+                figure: this.revertFigureBuffer.figure
+            });
+
+            if (this.revertFigureBuffer.figure?.name !== 'pawn') {
+                let i = -1;
+                const arr = (this.revertFigureBuffer.figure?.color === 'white') ? this.whitePromotionList : this.blackPromotionList;
+                for (let j = 0; j < arr.length; j++) {
+                    const element = arr[j];
+                    if (element === this.revertFigureBuffer.figure?.name) {
+                        i = j;
+                        break;
+                    }
+                }
+
+                if (this.revertFigureBuffer.figure?.color === 'white') {
+                    this.whitePromotionList.splice(i, 1);
+                }
+                else {
+                    this.blackPromotionList.splice(i, 1);
+                }
+            }
+
+            this.prisonerRemoved = false;
+            this.revertFigureBuffer = null;
+        }
     }
     
     private testCheck(color: string, throwOnCheck?: boolean, setVariables?: boolean, saveFigures?: boolean): void {
@@ -342,8 +378,6 @@ export class ChessBase {
         else {
             this.revertFigureBuffer = null;
         }
-
-        this.revertStepBuffer = { from: step.to, to: step.from };
 
         const fig = this.getFigure(step.from!.x, step.from!.y);
         

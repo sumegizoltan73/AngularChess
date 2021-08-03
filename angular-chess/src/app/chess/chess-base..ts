@@ -11,9 +11,11 @@ export class ChessBase {
     private revertFigureBuffer: ICell | null = null;
     private revertStepBuffer: IStep | null = null;
     private prisonerRemoved: boolean = false;
+    private checkFiguresWithCell: ICell[] = [];
 
     events: ChessEvents;
     board: ICell[] = [];
+    virtualboard: ICell[] = [];     // for check (etc.) detection with virtual steps
     
     enPassant: any = null;
     whitePromotionList: string[] = [];
@@ -185,13 +187,11 @@ export class ChessBase {
         this.isLoaderVisible = true;
         this.isPunchEnemyKingCanBeTested = true;
 
-        this.testCheck(color, false);
+        this.testCheck(color, false, true, true);
 
         const isCheck: boolean = (color === 'white') ? this.isCheckToWhite : this.isCheckToBlack;
         
         if (isCheck) {
-            // from which figure(s)
-
             // can step away || can block || can hit (if one figure)   
             let checkmate : boolean = true;
             let testCase: string[] = ['can_step_away', 'can_block', 'can_hit'];
@@ -201,15 +201,15 @@ export class ChessBase {
                 
                 switch (element) {
                     case 'can_step_away':
-                        checkmate = false;
+                        checkmate = false;  // TODO: this.canStepAway(color)
                         break;
 
                     case 'can_block':
-                        checkmate = false;
+                        checkmate = false;  // TODO: this.canBlock(color)
                         break;
 
                     case 'can_hit':
-                        checkmate = false;
+                        checkmate = false;  // TODO: this.canHit(color)
                         break;
                 
                     default:
@@ -230,9 +230,9 @@ export class ChessBase {
             }
         }
         else {
-            // stalemate
+            // TODO: stalemate
 
-            // dead position
+            // TODO: dead position
         }
     }
     
@@ -243,11 +243,61 @@ export class ChessBase {
     }
 
     private revertStep(step: IStep): void {
-
+        // TODO: revert step
     }
     
-    private testCheck(color: string, throwOnCheck?: boolean): void {
+    private testCheck(color: string, throwOnCheck?: boolean, setVariables?: boolean, saveFigures?: boolean): void {
+        let isCheck: boolean = false;
+        const kingWithCell: ICell = this.getKingWithCell(color);
+        const stepForCheck: IStep = {
+            from: null,
+            to: {
+                x: kingWithCell.x,
+                y: kingWithCell.y
+            }
+        };
 
+        this.checkFiguresWithCell = [];
+
+        for (let i = 0; i < this.board.length; i++) {
+            const element = this.board[i];
+            
+            if (element.figure?.color !== color && element.figure?.name !== 'king') {
+                const step = {
+                    from: { x: element.x, y: element.y },
+                    to: stepForCheck.to
+                };
+
+                isCheck = element.figure!.isStepPossible(step);
+
+                if (isCheck && saveFigures !== true) {
+                    break;
+                }
+                else if (isCheck && saveFigures === true) {
+                    this.checkFiguresWithCell.push(element);
+                }
+            }
+        }
+
+        if (isCheck) {
+            if (setVariables === true) {
+                this.isCheckToWhite = (color === 'white');
+                this.isCheckToBlack = (color === 'black');
+            }
+
+            if (throwOnCheck === true) {
+                throw new Error('Check occured!');
+            }
+        }
+    }
+
+    private getKingWithCell(color: string): ICell {
+        const cell = this.board.find(function (el) {
+            return el.figure?.color === color &&
+                el.figure.name === 'king';
+        });
+    
+        return cell as ICell;
     }
 
     private isCheckToKing(color: string): boolean {

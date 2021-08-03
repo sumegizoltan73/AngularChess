@@ -25,12 +25,17 @@ export class ChessComponent implements OnInit {
     this.chessBase.events.subscribe('stepFinished', (eventArgs: any) => { this.onStep(eventArgs); });
     this.chessBase.events.subscribe('stepIllegal', () => { this.clearStep(); });
     this.chessBase.events.subscribe('promotionFinished', () => { this.onPromotion(); });
+    this.chessBase.events.subscribe('checkmate', () => { this.onCheckMate(); });
 
     this.fillBoard();
   }
 
   get colorOfNext(): string {
     return (this.isWhiteNext) ? 'white' : 'black';
+  }
+
+  get colorOfWinner(): string {
+    return (this.isCheckMateToWhite) ? 'black' : (this.isCheckMateToBlack) ? 'white' : '';
   }
 
   get isCheckToWhite(): boolean {
@@ -41,12 +46,81 @@ export class ChessComponent implements OnInit {
     return this.chessBase.isCheckToBlack;
   }
 
+  get isCheckMateToWhite(): boolean {
+    return this.chessBase.isCheckMateToWhite;
+  }
+
+  get isCheckMateToBlack(): boolean {
+    return this.chessBase.isCheckMateToBlack;
+  }
+
+  get isWhiteResigned(): boolean {
+    return false;
+  }
+
+  get isBlackResigned(): boolean {
+    return false;
+  }
+
+  get isExistsInfoToWhite(): boolean {
+    return this.isCheckToWhite || this.isCheckMateToWhite || this.isWhiteResigned;
+  }
+
+  get isExistsInfoToBlack(): boolean {
+    return this.isCheckToBlack || this.isCheckMateToBlack || this.isBlackResigned;
+  }
+
+  get infoToWhite(): string {
+    let _retVal = '';
+    
+    if (this.isCheckMateToWhite) {
+      _retVal = 'Checkmate!';
+    }
+    else if (this.isCheckToWhite) {
+      _retVal = 'Check!';
+    }
+    else if (this.isWhiteResigned) {
+      _retVal = 'Resigned!';
+    }
+
+    return _retVal;
+  }
+
+  get infoToBlack(): string {
+    let _retVal = '';
+    
+    if (this.isCheckMateToBlack) {
+      _retVal = 'Checkmate!';
+    }
+    else if (this.isCheckToBlack) {
+      _retVal = 'Check!';
+    }
+    else if (this.isBlackResigned) {
+      _retVal = 'Resigned!';
+    }
+
+    return _retVal;
+  }
+
+  get isGameEnded(): boolean {
+    // checkmate || resigning
+    return this.isCheckMateToWhite || this.isCheckMateToBlack;
+  }
+
   get isPromoteWhite(): boolean {
     return this.chessBase.isPawnPromotionWhite;
   }
 
   get isPromoteBlack(): boolean {
     return this.chessBase.isPawnPromotionBlack;
+  }
+
+  get isLoaderVisible(): boolean {
+    return this.chessBase.isLoaderVisible;
+  }
+
+  get isTestInProgress(): boolean {
+    return this.chessBase.isTestInProgress;
   }
 
   get blackPromotionList(): string[] {
@@ -61,7 +135,7 @@ export class ChessComponent implements OnInit {
   }
 
   onCellClick(x: number, y: number): void {
-    if (!(this.isPromoteWhite || this.isPromoteBlack)) {
+    if (!(this.isPromoteWhite || this.isPromoteBlack || this.isTestInProgress || this.isGameEnded)) {
       if (this.isClickedFrom) {
         this.setFrom(x, y);
       }
@@ -115,11 +189,18 @@ export class ChessComponent implements OnInit {
       this.isClickedFrom = !this.isClickedFrom;
       this.isWhiteNext = !this.isWhiteNext;
       this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
+
+      // test check, checkmate, dead position, stalemate
+      this.chessBase.processCombinatedTests(this.colorOfNext);
     }
   }
 
   private onPromotion(): void {
     this.onStep(null);
+  }
+
+  private onCheckMate(): void {
+    this.msg = 'Checkmate. ' + this.colorOfWinner.toUpperCaseFirstLetter() + ' won!';
   }
 
   private getFigure(x: number, y: number): IFigure | null {

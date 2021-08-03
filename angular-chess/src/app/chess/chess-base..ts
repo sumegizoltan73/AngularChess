@@ -22,6 +22,11 @@ export class ChessBase {
     isPawnPromotionBlack: boolean = false;
     isCheckToWhite: boolean = false;
     isCheckToBlack: boolean = false;
+    isCheckMateToWhite: boolean = false;
+    isCheckMateToBlack: boolean = false;
+    isLoaderVisible: boolean = false;
+    isPunchEnemyKingCanBeTested: boolean = false;
+    isTestInProgress: boolean = false;
 
     constructor(){
         this.events = new ChessEvents();
@@ -50,6 +55,9 @@ export class ChessBase {
     }
 
     stepAwayIfPossible(step: IStep): void {
+        this.isLoaderVisible = true;
+        this.isPunchEnemyKingCanBeTested = false;
+
         const fig = this.getFigure(step.from!.x, step.from!.y);
         const isPossible = fig?.isStepPossible(step);
 
@@ -64,10 +72,12 @@ export class ChessBase {
                 // en passant just in the next step
                 this.enPassant = null;
             }
+
             const arg = this.stateAfterStep(step);
 
             this.step(step);
-            if (arg && arg.state === 'castling') {
+            if (arg && arg.state === 'castling' && (!this.isCheckToKing(fig!.color))) {
+                // castling is not possible in chess
                 this.step(arg.additionalStep);
             }
             else if (arg && arg.state === 'en_passant_position') {
@@ -82,9 +92,26 @@ export class ChessBase {
                 }
             }
 
-            this.events.emit('stepFinished', arg);
+            try {
+                // if stay in check then revert, and throw stepillegal
+                this.testCheck(fig!.color, true);
+
+                // if errorCode == 0 (no_error)
+                this.isPunchEnemyKingCanBeTested = false;
+                this.isLoaderVisible = false;
+                this.events.emit('stepFinished', arg);
+            }
+            catch (ex) {
+                this.isPunchEnemyKingCanBeTested = false;
+
+                // if errorCode == 1 (stay_in_check)
+                this.revertStep(step);
+                this.isLoaderVisible = false;
+                this.events.emit('stepIllegal', null);
+            }
         }
         else {
+            this.isLoaderVisible = false;
             this.events.emit('stepIllegal', null);
         }
     }
@@ -152,7 +179,81 @@ export class ChessBase {
 
         this.events.emit('promotionFinished', null);
     }
+
+    processCombinatedTests(color: string): void {
+        this.isTestInProgress = true;
+        this.isLoaderVisible = true;
+        this.isPunchEnemyKingCanBeTested = true;
+
+        this.testCheck(color, false);
+
+        const isCheck: boolean = (color === 'white') ? this.isCheckToWhite : this.isCheckToBlack;
+        
+        if (isCheck) {
+            // from which figure(s)
+
+            // can step away || can block || can hit (if one figure)   
+            let checkmate : boolean = true;
+            let testCase: string[] = ['can_step_away', 'can_block', 'can_hit'];
+            
+            for (let i = 0; i < testCase.length; i++) {
+                const element = testCase[i];
+                
+                switch (element) {
+                    case 'can_step_away':
+                        checkmate = false;
+                        break;
+
+                    case 'can_block':
+                        checkmate = false;
+                        break;
+
+                    case 'can_hit':
+                        checkmate = false;
+                        break;
+                
+                    default:
+                        break;
+                }
+
+                if (!checkmate) {
+                    break;
+                }
+            }
+
+            this.clearTestVariables();
+
+            if (checkmate) {
+                this.isCheckMateToWhite = (color === 'white');
+                this.isCheckMateToBlack = (color === 'black');
+                this.events.emit('checkmate', null);
+            }
+        }
+        else {
+            // stalemate
+
+            // dead position
+        }
+    }
     
+    private clearTestVariables(): void {
+        this.isTestInProgress = false;
+        this.isLoaderVisible = false;
+        this.isPunchEnemyKingCanBeTested = false;
+    }
+
+    private revertStep(step: IStep): void {
+
+    }
+    
+    private testCheck(color: string, throwOnCheck?: boolean): void {
+
+    }
+
+    private isCheckToKing(color: string): boolean {
+        return (color === 'white') ? this.isCheckToWhite : this.isCheckToBlack;
+    }
+
     private removePrisoner(): void {
         const figTo = this.getFigure(this.enPassant.prisoner.x, this.enPassant.prisoner.y);
         if (figTo) {

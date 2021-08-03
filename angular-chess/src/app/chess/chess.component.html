@@ -1,4 +1,4 @@
-<div class="check-info" *ngIf="isCheckToBlack"><span>Check!</span></div>
+<div class="check-info"><span *ngIf="isExistsInfoToBlack">{{ infoToBlack }}</span></div>
 
 <div class="promotion-list" *ngIf="isPromoteWhite">
     <span class="chess-icons" *ngFor="let name of whitePromotionList; let i=index;" 
@@ -12,7 +12,9 @@
         <th *ngFor="let col of x">
             {{ col }}
         </th>
-        <th></th>
+        <th>
+            <div class="loader" *ngIf="isLoaderVisible"></div>
+        </th>
     </tr>
     <tr *ngFor="let row of y; let i = index;">
         <td>{{ row }}</td>
@@ -38,6 +40,6 @@
         (click)="onPromotionClick(name, i)"></span>
 </div>
 
-<div class="check-info" *ngIf="isCheckToWhite"><span>Check!</span></div>
+<div class="check-info"><span *ngIf="isExistsInfoToWhite">{{ infoToWhite }}</span></div>
 
 <p>{{ msg}}</p>

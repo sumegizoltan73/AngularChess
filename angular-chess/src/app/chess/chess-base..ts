@@ -95,6 +95,7 @@ export class ChessBase {
 
             try {
                 // if stay in check then revert, and throw stepillegal
+                this.isHitEnemyKingCanBeTested = true;
                 this.testCheck(fig!.color, true);
 
                 // if errorCode == 0 (no_error)

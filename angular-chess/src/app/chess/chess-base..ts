@@ -232,6 +232,8 @@ export class ChessBase {
             // TODO: stalemate
 
             // TODO: dead position
+
+            this.clearTestVariables();
         }
     }
     

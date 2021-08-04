@@ -279,17 +279,7 @@ export class ChessBase {
                 to: { x: element.x, y: element.y }
             }; 
             if (cell.figure!.isStepPossible(step)) {
-                // if possible -> copy to virtual, step in virtual, testCheck(virtual)
-                this.isVirtualizeBoard = true;
-                this._virtualboard = this._board.slice();
-                this.removeFigure(step.from!.x, step.from!.y);
-                this.removeFigure(step.to!.x, step.to!.y);
-                this._virtualboard.push({
-                    x: step.to!.x,
-                    y: step.to!.y,
-                    figure: cell.figure
-                });
-                this.isHitEnemyKingCanBeTested = true;
+                this.prepareVirtualBoard(step, cell.figure!);
 
                 try {
                     this.testCheck(color, true, false, false);
@@ -313,11 +303,87 @@ export class ChessBase {
     private canBlock(color: string): boolean {
         let _retVal = false;
 
+        if (this.checkFiguresWithCell.length < 2) {
+            const attackerCell = this.checkFiguresWithCell[0];
+            const cell = this.getKingWithCell(color);
+            if (attackerCell.figure?.name !== 'knight'
+                && (Math.abs(attackerCell.x - cell.x) > 1
+                    || Math.abs(attackerCell.y - cell.y) > 1)) {
+                const defenseZone = this.getDefenseZone(cell, attackerCell);
+
+                for (let i = 0; i < this.board.length; i++) {
+                    const element = this.board[i];
+                    
+                    if (element.figure?.color === color && element.figure.name !== 'king'){
+                        const from: ICord = { x: element.x, y: element.y }; 
+
+                        for (let j = 0; j < defenseZone.length; j++) {
+                            const dz = defenseZone[j];
+                            const step: IStep = {
+                                from: from,
+                                to: { x: dz.x, y: dz.y }
+                            }; 
+                            if (element.figure!.isStepPossible(step)) {
+                                this.prepareVirtualBoard(step, element.figure);
+
+                                try {
+                                    this.testCheck(color, true, false, false);
+
+                                    _retVal = true;
+                                    break;
+                                }
+                                catch (ex) {
+                                    _retVal = false;
+                                }
+                            }
+                        }
+
+                        if (_retVal) {
+                            break;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        this.isHitEnemyKingCanBeTested = false;
+        this.isVirtualizeBoard = false;
+
         return _retVal;
     }
 
     private canHit(color: string): boolean {
         let _retVal = false;
+
+        return _retVal;
+    }
+
+    private prepareVirtualBoard(step: IStep, fig: IFigure): void {
+        // if possible -> copy to virtual, step in virtual, testCheck(virtual)
+        this.isVirtualizeBoard = true;
+        this._virtualboard = this._board.slice();
+        this.removeFigure(step.from!.x, step.from!.y);
+        this.removeFigure(step.to!.x, step.to!.y);
+        this._virtualboard.push({
+            x: step.to!.x,
+            y: step.to!.y,
+            figure: fig
+        });
+        this.isHitEnemyKingCanBeTested = true;
+    }
+
+    private getDefenseZone(cell1: ICell, cell2: ICell): ICord[] {
+        let _retVal: ICord[] = [];
+        const lengthX = Math.abs(cell2.x - cell1.x);
+        const lengthY = Math.abs(cell2.y - cell1.y);
+        const j = (lengthX >= lengthY) ? lengthX : lengthY;
+        const increaseX = (lengthX > 0) ? (cell2.x - cell1.x) / lengthX : 0;
+        const increaseY = (lengthY > 0) ? (cell2.y - cell1.y) / lengthY : 0;
+
+        for (let i = 1; i < j; i++) {
+            _retVal.push({ x: cell1.x + (i * increaseX), y: cell1.y + (i * increaseY)});
+        }
 
         return _retVal;
     }
@@ -380,7 +446,9 @@ export class ChessBase {
             }
         };
 
-        this.checkFiguresWithCell = [];
+        if (saveFigures === true) {
+            this.checkFiguresWithCell = [];
+        }
 
         for (let i = 0; i < this.board.length; i++) {
             const element = this.board[i];

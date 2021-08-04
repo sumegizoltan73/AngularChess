@@ -334,6 +334,7 @@ export class ChessBase {
                                 }
                                 catch (ex) {
                                     _retVal = false;
+                                    this.isVirtualizeBoard = false;
                                 }
                             }
                         }
@@ -355,6 +356,44 @@ export class ChessBase {
 
     private canHit(color: string): boolean {
         let _retVal = false;
+
+        if (this.checkFiguresWithCell.length < 2) {
+            const attackerCell = this.checkFiguresWithCell[0];
+            const cell = this.getKingWithCell(color);
+            
+            for (let i = 0; i < this.board.length; i++) {
+                const element = this.board[i];
+                
+                if (element.figure?.color === color){
+                    const from: ICord = { x: element.x, y: element.y }; 
+                    const step: IStep = {
+                        from: from,
+                        to: { x: attackerCell.x, y: attackerCell.y }
+                    }; 
+                    if (element.figure!.isStepPossible(step)) {
+                        this.prepareVirtualBoard(step, element.figure);
+
+                        try {
+                            this.testCheck(color, true, false, false);
+
+                            _retVal = true;
+                            break;
+                        }
+                        catch (ex) {
+                            _retVal = false;
+                            this.isVirtualizeBoard = false;
+                        }
+                    }
+
+                    if (_retVal) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        this.isHitEnemyKingCanBeTested = false;
+        this.isVirtualizeBoard = false;
 
         return _retVal;
     }

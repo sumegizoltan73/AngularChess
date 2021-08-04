@@ -28,6 +28,49 @@ export class FigureKing extends Figure implements IFigure {
         return _retVal;
     }
 
+    isOrigPosition(step: IStep): boolean {
+        return !this.isMoved && ((this.color === 'white' && step.from!.y === 7 && step.from!.x === 4) 
+                || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 4));
+    }
+
+    getRange(x: number, y: number): ICord[] {
+        let _retVal: ICord[] = [];
+
+        // current row
+        if (x > 0) {
+            _retVal.push({ x: x - 1, y: y });
+        }
+        if (x < 7) {
+            _retVal.push({ x: x + 1, y: y });
+        }
+
+        // under
+        if (this.color === 'white' && y < 7 || this.color === 'black' && y > 0) {
+            const u = (this.color === 'white') ? y + 1 : y - 1;
+            if (x > 0) {
+                _retVal.push({ x: x - 1, y: u });
+            }
+            _retVal.push({ x: x, y: u });
+            if (x < 7) {
+                _retVal.push({ x: x + 1, y: u });
+            }
+        }
+
+        // above
+        if (this.color === 'white' && y > 0 || this.color === 'black' && y < 7) {
+            const a = (this.color === 'white') ? y - 1 : y + 1;
+            if (x > 0) {
+                _retVal.push({ x: x - 1, y: a });
+            }
+            _retVal.push({ x: x, y: a });
+            if (x < 7) {
+                _retVal.push({ x: x + 1, y: a });
+            }
+        }
+
+        return _retVal;
+    }
+
     private isCastling(step: IStep): boolean {
         // orig_pos && castling
         let _retVal = false;
@@ -44,11 +87,6 @@ export class FigureKing extends Figure implements IFigure {
         } 
 
         return _retVal;
-    }
-
-    isOrigPosition(step: IStep): boolean {
-        return !this.isMoved && ((this.color === 'white' && step.from!.y === 7 && step.from!.x === 4) 
-                || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 4));
     }
 
     private isStepNotBlockedByEnemyKnightRange(step: IStep): boolean {

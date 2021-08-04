@@ -11,10 +11,11 @@ export class ChessBase {
     private revertFigureBuffer: ICell | null = null;
     private prisonerRemoved: boolean = false;
     private checkFiguresWithCell: ICell[] = [];
+    private isVirtualizeBoard: boolean = false;
+    private _board: ICell[] = [];
+    private _virtualboard: ICell[] = [];     // for check (etc.) detection with virtual steps
 
     events: ChessEvents;
-    board: ICell[] = [];
-    virtualboard: ICell[] = [];     // for check (etc.) detection with virtual steps
     
     enPassant: any = null;
     whitePromotionList: string[] = [];
@@ -28,6 +29,18 @@ export class ChessBase {
     isLoaderVisible: boolean = false;
     isHitEnemyKingCanBeTested: boolean = false;
     isTestInProgress: boolean = false;
+
+    get board(): ICell[] {
+        return (this.isVirtualizeBoard) ? this._virtualboard : this._board;
+    }
+    set board(value: ICell[]) {
+        if (this.isVirtualizeBoard) {
+            this._virtualboard = value;
+        }
+        else {
+            this._board = value;
+        }
+    }
 
     constructor(){
         this.events = new ChessEvents();
@@ -207,15 +220,15 @@ export class ChessBase {
                 
                 switch (element) {
                     case 'can_step_away':
-                        checkmate = false;  // TODO: this.canStepAway(color)
+                        checkmate = !this.canStepAway(color);
                         break;
 
                     case 'can_block':
-                        checkmate = false;  // TODO: this.canBlock(color)
+                        checkmate = !this.canBlock(color);
                         break;
 
                     case 'can_hit':
-                        checkmate = false;  // TODO: this.canHit(color)
+                        checkmate = !this.canHit(color);
                         break;
                 
                     default:
@@ -251,6 +264,62 @@ export class ChessBase {
         });
     
         return cell as ICell;
+    }
+
+    private canStepAway(color: string): boolean {
+        let _retVal = false;
+
+        const cell = this.getKingWithCell(color);
+        const from: ICord = { x: cell.x, y: cell.y }; 
+        const arr: ICord[] = (<FigureKing> cell.figure).getRange(cell.x, cell.y);
+        for (let i = 0; i < arr.length; i++) {
+            const element = arr[i];
+            const step: IStep = {
+                from: from,
+                to: { x: element.x, y: element.y }
+            }; 
+            if (cell.figure!.isStepPossible(step)) {
+                // if possible -> copy to virtual, step in virtual, testCheck(virtual)
+                this.isVirtualizeBoard = true;
+                this._virtualboard = this._board.slice();
+                this.removeFigure(step.from!.x, step.from!.y);
+                this.removeFigure(step.to!.x, step.to!.y);
+                this._virtualboard.push({
+                    x: step.to!.x,
+                    y: step.to!.y,
+                    figure: cell.figure
+                });
+                this.isHitEnemyKingCanBeTested = true;
+
+                try {
+                    this.testCheck(color, true, false, false);
+
+                    _retVal = true;
+                    break;
+                }
+                catch (ex) {
+                    _retVal = false;
+                }
+
+            }
+        }
+
+        this.isHitEnemyKingCanBeTested = false;
+        this.isVirtualizeBoard = false;
+
+        return _retVal;
+    }
+
+    private canBlock(color: string): boolean {
+        let _retVal = false;
+
+        return _retVal;
+    }
+
+    private canHit(color: string): boolean {
+        let _retVal = false;
+
+        return _retVal;
     }
     
     private clearTestVariables(): void {

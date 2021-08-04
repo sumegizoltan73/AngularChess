@@ -3,19 +3,25 @@ import { Figure } from "./chess-figure";
 export class FigurePawn extends Figure implements IFigure {
     
     constructor(color: string){
-        super('pawn', color);
+        super('pawn', color, 1, 2);
     }
 
     isStepPossible(step: IStep): boolean {
         let _retVal = false;
         
-        if (this.isCoordsNotEquals(step) 
-                && this.isStepNotBlocked(step)
-                && this.isForwardStep(step) 
-                && (this.isOneCellStep(step) || this.isTwoCellStepFromOrig(step)) 
-                && ((this.isLinearStep(step) && this.isStepNotBlockedByEnemy(step)) 
-                    || (this.isDiagonalStep(step) && this.isPunchOrEnPassant(step)))) {
-            _retVal = true;
+        if (this.isCoordsNotEquals(step)) {
+            if (this.isDistancePossible(step)) {
+                if (this.isForwardStep(step)) {
+                    if (this.isStepNotBlocked(step)) { 
+                        if (this.isOneCellStep(step) || this.isTwoCellStepFromOrig(step)) {
+                            if ((this.isLinearStep(step) && this.isStepNotBlockedByEnemy(step)) 
+                                || (this.isDiagonalStep(step) && this.isPunchOrEnPassant(step))) { 
+                                _retVal = true;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         return _retVal;
@@ -47,7 +53,9 @@ export class FigurePawn extends Figure implements IFigure {
         const fig = this.chessBase.getFigure(step.to!.x, step.to!.y);
 
         if (fig && fig.color !== this.color) {
-            _retVal = true;
+            if (fig.name !== 'king' || this.chessBase.isHitEnemyKingCanBeTested) {
+                _retVal = true;
+            }
         }
 
         return _retVal;

@@ -3,9 +3,23 @@ import { ChessBase } from "./chess-base.";
 export class Figure {
 
     protected chessBase: ChessBase;
+    protected maxX: number;
+    protected maxY: number;
 
-    constructor(public name: string, public color: string){
+    constructor(public name: string, public color: string, maxX: number, maxY: number){
         this.chessBase = ChessBase.instance;
+        this.maxX = maxX;
+        this.maxY = maxY;
+    }
+
+    protected isDistancePossible(step: IStep): boolean {
+        let _retVal = false;
+
+        if (Math.abs(step.to!.x - step.from!.x) <= this.maxX && Math.abs(step.to!.y - step.from!.y) <= this.maxY) {
+            _retVal = true;
+        }
+
+        return _retVal;
     }
 
     protected isStepNotBlocked(step: IStep): boolean {
@@ -62,10 +76,13 @@ export class Figure {
 
     protected isCellToNotBlockedByEnemyKing(step: IStep): boolean {
         let _retVal = true;
-        const figTo = this.chessBase.getFigure(step.to!.x, step.to!.y);
 
-        if (figTo && (figTo.color !== this.color) && (figTo.name === 'king')){ 
-            _retVal = false;
+        if (!(this.chessBase.isHitEnemyKingCanBeTested || this.name === 'pawn')) {
+            const figTo = this.chessBase.getFigure(step.to!.x, step.to!.y);
+
+            if (figTo && (figTo.color !== this.color) && (figTo.name === 'king')){ 
+                _retVal = false;
+            }
         }
 
         return _retVal;

@@ -26,7 +26,7 @@ export class ChessBase {
     isCheckMateToWhite: boolean = false;
     isCheckMateToBlack: boolean = false;
     isLoaderVisible: boolean = false;
-    isPunchEnemyKingCanBeTested: boolean = false;
+    isHitEnemyKingCanBeTested: boolean = false;
     isTestInProgress: boolean = false;
 
     constructor(){
@@ -57,7 +57,7 @@ export class ChessBase {
 
     stepAwayIfPossible(step: IStep): void {
         this.isLoaderVisible = true;
-        this.isPunchEnemyKingCanBeTested = false;
+        this.isHitEnemyKingCanBeTested = false;
 
         const fig = this.getFigure(step.from!.x, step.from!.y);
         const isPossible = fig?.isStepPossible(step);
@@ -98,12 +98,12 @@ export class ChessBase {
                 this.testCheck(fig!.color, true);
 
                 // if errorCode == 0 (no_error)
-                this.isPunchEnemyKingCanBeTested = false;
+                this.isHitEnemyKingCanBeTested = false;
                 this.isLoaderVisible = false;
                 this.events.emit('stepFinished', arg);
             }
             catch (ex) {
-                this.isPunchEnemyKingCanBeTested = false;
+                this.isHitEnemyKingCanBeTested = false;
 
                 // if errorCode == 1 (stay_in_check)
                 this.revertStep(step);
@@ -184,7 +184,7 @@ export class ChessBase {
     processCombinatedTests(color: string): void {
         this.isTestInProgress = true;
         this.isLoaderVisible = true;
-        this.isPunchEnemyKingCanBeTested = true;
+        this.isHitEnemyKingCanBeTested = true;
 
         this.testCheck(color, false, true, true);
 
@@ -240,7 +240,7 @@ export class ChessBase {
     private clearTestVariables(): void {
         this.isTestInProgress = false;
         this.isLoaderVisible = false;
-        this.isPunchEnemyKingCanBeTested = false;
+        this.isHitEnemyKingCanBeTested = false;
     }
 
     private revertStep(step: IStep): void {
@@ -306,12 +306,13 @@ export class ChessBase {
                     to: stepForCheck.to
                 };
 
-                isCheck = element.figure!.isStepPossible(step);
+                const isCheckFromFigure = element.figure!.isStepPossible(step);
+                isCheck = isCheck || isCheckFromFigure;
 
-                if (isCheck && saveFigures !== true) {
+                if (isCheckFromFigure && saveFigures !== true) {
                     break;
                 }
-                else if (isCheck && saveFigures === true) {
+                else if (isCheckFromFigure && saveFigures === true) {
                     this.checkFiguresWithCell.push(element);
                 }
             }

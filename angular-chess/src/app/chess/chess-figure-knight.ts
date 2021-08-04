@@ -3,17 +3,20 @@ import { Figure } from "./chess-figure";
 export class FigureKnight extends Figure implements IFigure {
     
     constructor(color: string){
-        super('knight', color);
+        super('knight', color, 2, 2);
     }
 
     isStepPossible(step: IStep): boolean {
         let _retVal = false;
         
-        if (this.isCoordsNotEquals(step)
-                && this.isKnightStep(step)
-                && this.isCellToNotBlockedBySameFigure(step)
-                && this.isCellToNotBlockedByEnemyKing(step)) {
-            _retVal = true;
+        if (this.isCoordsNotEquals(step)) {
+            if (this.isKnightStep(step)) {
+                if (this.isCellToNotBlockedBySameFigure(step)) {
+                    if (this.isCellToNotBlockedByEnemyKing(step)) { 
+                        _retVal = true;
+                    }
+                }
+            }
         }
 
         return _retVal;

@@ -5,17 +5,22 @@ export class FigureKing extends Figure implements IFigure {
     isMoved: boolean = false;
     
     constructor(color: string){
-        super('king', color);
+        super('king', color, 2, 1);
     }
 
     isStepPossible(step: IStep): boolean {
         let _retVal = false;
-        const isCastling = this.isCastling(step);
 
-        if (this.isCoordsNotEquals(step)
-                && (this.isStepNotBlocked(step) || isCastling)
-                && (this.isOneCellStep(step) || isCastling)) {
-            _retVal = true;
+        if (this.isCoordsNotEquals(step)) {
+            if (this.isDistancePossible(step)) {
+                const isCastling = this.isCastling(step);
+                
+                if (this.isOneCellStep(step) || isCastling) {
+                    if (this.isStepNotBlocked(step) || isCastling) {
+                        _retVal = true;
+                    }
+                }
+            }
         }
 
         return _retVal;

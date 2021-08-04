@@ -1,4 +1,4 @@
-<div class="check-info"><span *ngIf="isExistsInfoToBlack">{{ infoToBlack }}</span></div>
+<div class="check-info">&nbsp;<span *ngIf="isExistsInfoToBlack">{{ infoToBlack }}</span></div>
 
 <div class="promotion-list" *ngIf="isPromoteWhite">
     <span class="chess-icons" *ngFor="let name of whitePromotionList; let i=index;" 
@@ -40,6 +40,6 @@
         (click)="onPromotionClick(name, i)"></span>
 </div>
 
-<div class="check-info"><span *ngIf="isExistsInfoToWhite">{{ infoToWhite }}</span></div>
+<div class="check-info">&nbsp;<span *ngIf="isExistsInfoToWhite">{{ infoToWhite }}</span></div>
 
 <p>{{ msg}}</p>

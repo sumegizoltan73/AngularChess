@@ -99,6 +99,12 @@ export class ChessBase {
                 this.testCheck(fig!.color, true);
 
                 // if errorCode == 0 (no_error)
+                if (fig!.color === 'white') {
+                    this.isCheckToWhite = false;
+                }
+                else {
+                    this.isCheckToBlack = false;
+                }
                 this.isHitEnemyKingCanBeTested = false;
                 this.isLoaderVisible = false;
                 this.events.emit('stepFinished', arg);

@@ -17,7 +17,9 @@ export class FigureKing extends Figure implements IFigure {
                 
                 if (this.isOneCellStep(step) || isCastling) {
                     if (this.isStepNotBlocked(step) || isCastling) {
-                        _retVal = true;
+                        if (this.isStepNotBlockedByEnemyKnightRange(step)) {
+                            _retVal = true;
+                        }
                     }
                 }
             }
@@ -47,6 +49,18 @@ export class FigureKing extends Figure implements IFigure {
     isOrigPosition(step: IStep): boolean {
         return !this.isMoved && ((this.color === 'white' && step.from!.y === 7 && step.from!.x === 4) 
                 || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 4));
+    }
+
+    private isStepNotBlockedByEnemyKnightRange(step: IStep): boolean {
+        let _retVal = true;
+        const enemyColor = (this.color === 'white') ? 'black' : 'white';
+        const cell = this.chessBase.getKingWithCell(enemyColor);
+
+        if (Math.abs(cell.x - step.to!.x) <= 1 && Math.abs(cell.y - step.to!.y) <= 1) {
+            _retVal = false;
+        }
+        
+        return _retVal;
     }
 
 }

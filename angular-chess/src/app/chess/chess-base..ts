@@ -237,6 +237,15 @@ export class ChessBase {
             this.clearTestVariables();
         }
     }
+
+    getKingWithCell(color: string): ICell {
+        const cell = this.board.find(function (el) {
+            return el.figure?.color === color &&
+                el.figure.name === 'king';
+        });
+    
+        return cell as ICell;
+    }
     
     private clearTestVariables(): void {
         this.isTestInProgress = false;
@@ -329,15 +338,6 @@ export class ChessBase {
                 throw new Error('Check occured!');
             }
         }
-    }
-
-    private getKingWithCell(color: string): ICell {
-        const cell = this.board.find(function (el) {
-            return el.figure?.color === color &&
-                el.figure.name === 'king';
-        });
-    
-        return cell as ICell;
     }
 
     private isCheckToKing(color: string): boolean {

@@ -19,6 +19,10 @@ A bástyával kell lépni, és a király melleti kockát kell megadni célként.
 Ha a gyalog a kezdő pozicíóból kettőt lép előre úgy, hogy előtte az ellenfél gyalogja van, és mellé is az ellenfél gyalogja kerül így, akkor az ellenfél a következő lépésben (és 
 csak abban a lépésben) el foghatja a gyalogot úgy, hogy a mellete lévő pozicióból átlósan mögé lép. A program az elfogás lépését szabályos lépésként dolgozza fel.
 
+## Gyalog csere (Pawn promotion)
+Ha a játékos gyalogja beér az elenfél kiinduló sorába, akkor a korábban elvesztett bábuk közül választhat cserét.
+![Pawn promotion](/angular-chess/src/assets/chess_4.PNG)
+
 ## Továbbfejlesztési lehetőség
 
 - A lépések listaszerű megjelenítése a játék végéig,

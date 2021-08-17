@@ -2,6 +2,10 @@
 
 ![Angular Chess](/angular-chess/src/assets/chess_3.PNG)
 
+## Demo
+
+[Angular Chess Azure website](https://angular-chess.azurewebsites.net)
+
 ## Működés
 
 A táblára egy inicializáló eljárás révén elhelyezésre kerülnek a sakkfigurák objektumként.

@@ -1,16 +1,23 @@
-const app = require('express')();
-const http = require('http').createServer(app);
+const express = require('express');
+const app = express();
+const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const cors = require('cors');
 
 const rooms = {};
+const port = process.env.PORT || 8080;
 
-app.use(cors({ origin: 'http://localhost:4200' }));
+//app.use(cors({ origin: 'http://localhost:4200' }));
+app.use(express.static('./public'));
 
-app.get('/', (req, res) => res.send('hello!'));
+//app.get('/', (req, res) => res.send('hello!'));
 
-http.listen(3000, () => {
-    console.log('listening on *:3000');
+app.get('/', (req, res) => {
+    res.sendFile('index.html',{root:__dirname});
+});
+
+app.listen(port, () => {
+    console.log('listening on *:' + port);
 });
 
 io.on('connection', (socket) => {

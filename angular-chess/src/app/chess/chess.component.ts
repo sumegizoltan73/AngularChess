@@ -13,6 +13,9 @@ export class ChessComponent implements OnInit {
   x: string[] = ['a','b','c','d','e','f','g','h'];
   y: string[] = ['8','7','6','5','4','3','2','1'];
   msg: string = '';
+  roomNameForCreate: string = '';
+  roomNameForJoin: string = '';
+  PINForJoin: string = '';
 
   private chessBase: ChessBase;
   private isWhiteNext: boolean = true;
@@ -20,6 +23,9 @@ export class ChessComponent implements OnInit {
   private step: IStep = { from: null, to: null };
   private isGameStarted: boolean = false;
   private isSinglePlayerGame: boolean = true;
+  private isMultiPlayerGameCreated: boolean = false;
+  private isJoinedAsGamer: boolean = false;
+  private isJoinedAsViewer: boolean = false;
   private localGamers: string[] = ['white', 'black'];
 
   constructor() { 
@@ -133,6 +139,18 @@ export class ChessComponent implements OnInit {
     return !this.isSinglePlayerGame;
   }
 
+  get isPlayerModeSelectionDisabled(): boolean {
+    return this.isMultiPlayerGameCreated || this.isMultiplayerCreateOptionsDisabled;
+  }
+
+  get isMultiplayerJoinOptionsDisabled(): boolean {
+    return this.isMultiPlayerGameCreated;
+  }
+
+  get isMultiplayerCreateOptionsDisabled(): boolean {
+    return this.isJoinedAsGamer || this.isJoinedAsViewer;
+  }
+
   get isPromoteWhite(): boolean {
     return this.chessBase.isPawnPromotionWhite;
   }
@@ -181,6 +199,27 @@ export class ChessComponent implements OnInit {
 
   onResignClick(color: string): void {
     this.chessBase.resign(color);
+  }
+
+  onCreateGameClick(): void {
+    if (this.roomNameForCreate) {
+      this.isMultiPlayerGameCreated = true;
+
+    }
+  }
+
+  onJoinAsGamerClick(): void {
+    if (this.roomNameForJoin && this.PINForJoin && this.PINForJoin.length === 4) {
+      this.isJoinedAsGamer = true;
+
+    }
+  }
+
+  onJoinAsViewerClick(): void {
+    if (this.roomNameForJoin && this.PINForJoin && this.PINForJoin.length === 4) {
+      this.isJoinedAsViewer = true;
+
+    }
   }
 
   gameModeChange(e: Event): void {

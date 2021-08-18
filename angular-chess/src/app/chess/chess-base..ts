@@ -26,6 +26,8 @@ export class ChessBase {
     isCheckToBlack: boolean = false;
     isCheckMateToWhite: boolean = false;
     isCheckMateToBlack: boolean = false;
+    isWhiteResigned: boolean = false;
+    isBlackResigned: boolean = false;
     isLoaderVisible: boolean = false;
     isHitEnemyKingCanBeTested: boolean = false;
     isTestInProgress: boolean = false;
@@ -264,6 +266,17 @@ export class ChessBase {
         });
     
         return cell as ICell;
+    }
+
+    resign(color: string): void {
+        if (color === 'white') {
+            this.isWhiteResigned = true;
+        }
+        else {
+            this.isBlackResigned = true;
+        }
+
+        this.events.emit('resign', null);
     }
 
     private canStepAway(color: string): boolean {

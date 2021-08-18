@@ -18,6 +18,9 @@ export class ChessComponent implements OnInit {
   private isWhiteNext: boolean = true;
   private isClickedFrom: boolean = true;
   private step: IStep = { from: null, to: null };
+  private isGameStarted: boolean = false;
+  private isSinglePlayerGame: boolean = true;
+  private localGamers: string[] = ['white', 'black'];
 
   constructor() { 
     this.chessBase = ChessBase.instance;
@@ -26,6 +29,7 @@ export class ChessComponent implements OnInit {
     this.chessBase.events.subscribe('stepIllegal', () => { this.clearStep(); });
     this.chessBase.events.subscribe('promotionFinished', () => { this.onPromotion(); });
     this.chessBase.events.subscribe('checkmate', () => { this.onCheckMate(); });
+    this.chessBase.events.subscribe('resign', () => { this.onResign(); });
 
     this.fillBoard();
   }
@@ -34,8 +38,12 @@ export class ChessComponent implements OnInit {
     return (this.isWhiteNext) ? 'white' : 'black';
   }
 
+  get isNextLocalGamer(): boolean {
+    return this.localGamers.includes(this.colorOfNext);
+  }
+
   get colorOfWinner(): string {
-    return (this.isCheckMateToWhite) ? 'black' : (this.isCheckMateToBlack) ? 'white' : '';
+    return (this.isCheckMateToWhite || this.isWhiteResigned) ? 'black' : (this.isCheckMateToBlack || this.isBlackResigned) ? 'white' : '';
   }
 
   get isCheckToWhite(): boolean {
@@ -55,11 +63,11 @@ export class ChessComponent implements OnInit {
   }
 
   get isWhiteResigned(): boolean {
-    return false;
+    return this.chessBase.isWhiteResigned;
   }
 
   get isBlackResigned(): boolean {
-    return false;
+    return this.chessBase.isBlackResigned;
   }
 
   get isExistsInfoToWhite(): boolean {
@@ -104,7 +112,25 @@ export class ChessComponent implements OnInit {
 
   get isGameEnded(): boolean {
     // checkmate || resigning
-    return this.isCheckMateToWhite || this.isCheckMateToBlack;
+    return this.isCheckMateToWhite || this.isCheckMateToBlack || this.isWhiteResigned || this.isBlackResigned;
+  }
+
+  get isStarted(): boolean {
+    return this.isGameStarted;
+  }
+
+  get isSinglePlayer(): boolean {
+    return this.isSinglePlayerGame;
+  }
+
+  set isSinglePlayer(value: boolean) {
+    if (this.isSinglePlayerGame != value){
+      this.isSinglePlayerGame = value;
+    }
+  }
+
+  get isMultiPlayer(): boolean {
+    return !this.isSinglePlayerGame;
   }
 
   get isPromoteWhite(): boolean {
@@ -135,7 +161,9 @@ export class ChessComponent implements OnInit {
   }
 
   onCellClick(x: number, y: number): void {
-    if (!(this.isPromoteWhite || this.isPromoteBlack || this.isTestInProgress || this.isGameEnded)) {
+    const isStepEnabled = (this.isStarted && this.isNextLocalGamer) || this.isSinglePlayer;
+
+    if (!(this.isPromoteWhite || this.isPromoteBlack || this.isTestInProgress || this.isGameEnded) && isStepEnabled) {
       if (this.isClickedFrom) {
         this.setFrom(x, y);
       }
@@ -149,6 +177,14 @@ export class ChessComponent implements OnInit {
     const color = (this.isPromoteWhite) ? 'white' : 'black';
     
     this.chessBase.convertPawn(name, color, this.step, i);
+  }
+
+  onResignClick(color: string): void {
+    this.chessBase.resign(color);
+  }
+
+  gameModeChange(e: Event): void {
+    this.isSinglePlayerGame = ((<HTMLInputElement> e.target).id === 'singlePlayer');
   }
 
   isCellWhite(x: number, y: number): boolean {
@@ -203,6 +239,12 @@ export class ChessComponent implements OnInit {
     this.msg = 'Checkmate. ' + this.colorOfWinner.toUpperCaseFirstLetter() + ' won!';
   }
 
+  private onResign(): void {
+    const resignedColor = (this.isWhiteResigned) ? 'white' : 'black';
+
+    this.msg = resignedColor.toUpperCaseFirstLetter() + ' resigned. ' + this.colorOfWinner.toUpperCaseFirstLetter() + ' won!';
+  }
+
   private getFigure(x: number, y: number): IFigure | null {
     return this.chessBase.getFigure(x, y);
   }
@@ -211,6 +253,9 @@ export class ChessComponent implements OnInit {
     const fig = this.getFigure(x, y);
 
     if (fig && fig.color === this.colorOfNext) {
+      if (!this.isStarted) {
+        this.isGameStarted = true;
+      }
       this.isClickedFrom = !this.isClickedFrom;
       this.step.from = { x: x, y: y};
       this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ': Click the next cell!';

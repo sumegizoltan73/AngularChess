@@ -1,45 +1,81 @@
-<div class="check-info">&nbsp;<span *ngIf="isExistsInfoToBlack">{{ infoToBlack }}</span></div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="check-info">
+                &nbsp;
+                <span *ngIf="isExistsInfoToBlack">{{ infoToBlack }}</span>
+                <button type="button" class="btn btn-primary btn-sm btn-resign" 
+                    (click)="onResignClick('black')" [disabled]="isGameEnded">
+                    Resign
+                </button>
+            </div>
 
-<div class="promotion-list" *ngIf="isPromoteWhite">
-    <span class="chess-icons" *ngFor="let name of whitePromotionList; let i=index;" 
-        [ngClass]="classNameOfPromotion(name, 'white')"
-        (click)="onPromotionClick(name, i)"></span>
+            <div class="promotion-list" *ngIf="isPromoteWhite">
+                <span class="chess-icons" *ngFor="let name of whitePromotionList; let i=index;" 
+                    [ngClass]="classNameOfPromotion(name, 'white')"
+                    (click)="onPromotionClick(name, i)"></span>
+            </div>
+
+            <table>
+                <tr>
+                    <th></th>
+                    <th *ngFor="let col of x">
+                        {{ col }}
+                    </th>
+                    <th>
+                        <div class="loader" *ngIf="isLoaderVisible"></div>
+                    </th>
+                </tr>
+                <tr *ngFor="let row of y; let i = index;">
+                    <td>{{ row }}</td>
+                    <td *ngFor="let td of x; let j = index;" 
+                            [ngClass]="{'white': isCellWhite(j, i), 'black': !isCellWhite(j, i) }"
+                            (click)="onCellClick(j, i)">
+                        <span class="chess-icons" [ngClass]="classNameOfFigure(j, i)"></span>
+                    </td>
+                    <td>{{ row }}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td *ngFor="let col of x">
+                        {{ col }}
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <div class="promotion-list promotion-black" *ngIf="isPromoteBlack">
+                <span class="chess-icons" *ngFor="let name of blackPromotionList; let i=index;" 
+                    [ngClass]="classNameOfPromotion(name, 'black')"
+                    (click)="onPromotionClick(name, i)"></span>
+            </div>
+
+            <div class="check-info">
+                &nbsp;
+                <span *ngIf="isExistsInfoToWhite">{{ infoToWhite }}</span>
+                <button type="button" class="btn btn-primary btn-sm btn-resign" 
+                    (click)="onResignClick('white')" [disabled]="isGameEnded">
+                    Resign
+                </button>
+            </div>
+
+            <p>{{ msg}}</p>
+        </div>
+
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                        <input type="radio" class="btn-check" name="btnradio" id="singlePlayer" autocomplete="off" checked 
+                            (change)="gameModeChange($event)" [disabled]="isStarted">
+                        <label class="btn btn-outline-primary" for="singlePlayer">Single player</label>
+                      
+                        <input type="radio" class="btn-check" name="btnradio" id="multiPlayer" autocomplete="off" 
+                            (change)="gameModeChange($event)" [disabled]="isStarted">
+                        <label class="btn btn-outline-primary" for="multiPlayer">Multi player</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<table>
-    <tr>
-        <th></th>
-        <th *ngFor="let col of x">
-            {{ col }}
-        </th>
-        <th>
-            <div class="loader" *ngIf="isLoaderVisible"></div>
-        </th>
-    </tr>
-    <tr *ngFor="let row of y; let i = index;">
-        <td>{{ row }}</td>
-        <td *ngFor="let td of x; let j = index;" 
-                [ngClass]="{'white': isCellWhite(j, i), 'black': !isCellWhite(j, i) }"
-                (click)="onCellClick(j, i)">
-            <span class="chess-icons" [ngClass]="classNameOfFigure(j, i)"></span>
-        </td>
-        <td>{{ row }}</td>
-    </tr>
-    <tr>
-        <td></td>
-        <td *ngFor="let col of x">
-            {{ col }}
-        </td>
-        <td></td>
-    </tr>
-</table>
-
-<div class="promotion-list promotion-black" *ngIf="isPromoteBlack">
-    <span class="chess-icons" *ngFor="let name of blackPromotionList; let i=index;" 
-        [ngClass]="classNameOfPromotion(name, 'black')"
-        (click)="onPromotionClick(name, i)"></span>
-</div>
-
-<div class="check-info">&nbsp;<span *ngIf="isExistsInfoToWhite">{{ infoToWhite }}</span></div>
-
-<p>{{ msg}}</p>

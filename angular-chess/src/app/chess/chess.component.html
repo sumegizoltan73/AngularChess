@@ -81,7 +81,7 @@
                 <div class="col">
                     <div class="card" *ngIf="!isMultiplayerCreateOptionsDisabled">
                         <div class="card-body">
-                            <div class="input-group">
+                            <div class="input-group" *ngIf="!isRoomCreated">
                                 <input type="text" class="form-control" placeholder="Name of Room" aria-label="Room" 
                                     aria-describedby="button-create" [(ngModel)]="roomNameForCreate" />
                                 <button class="btn btn-outline-secondary" type="button" id="button-create"
@@ -89,24 +89,47 @@
                                     Create Game
                                 </button>
                             </div>   
-                            <span>Local gamer: white, Remote gamer: black</span>                           
+                            <span>
+                                Local gamer: <b>white</b>, 
+                                Remote gamer: <b>black</b> 
+                                - 
+                                <span style="color: red;" *ngIf="!isBlackGamerJoined">offline</span>
+                                <span style="color: green;" *ngIf="isBlackGamerJoined">online</span>
+                            </span>
+                            <br />
+                            <span class="multiplayer-info" *ngIf="isRoomCreated">
+                                Room: {{ roomNameForCreate }}, PIN: {{ PINForJoin }}
+                            </span>                         
                         </div>
                     </div>
 
                     <div class="card" *ngIf="!isMultiplayerJoinOptionsDisabled">
                         <div class="card-body">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Name of Room" [(ngModel)]="roomNameForJoin" />
-                                <input type="text" class="form-control" placeholder="PIN for Room" [(ngModel)]="PINForJoin" mask="0000" />
+                            <div *ngIf="!isStarted">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Name of Room" [(ngModel)]="roomNameForJoin" />
+                                    <input type="text" class="form-control" placeholder="PIN for Room" [(ngModel)]="PINForJoin" mask="0000" />
+                                </div>
+                                <button class="btn btn-outline-secondary btn-join" type="button" id="button-join-gamer"
+                                    (click)="onJoinAsGamerClick()" >
+                                    Join as Gamer
+                                </button>
+                                <button class="btn btn-outline-secondary btn-join" type="button" id="button-join-viwer"
+                                    (click)="onJoinAsViewerClick()" >
+                                    Join as Viwer
+                                </button>
                             </div>
-                            <button class="btn btn-outline-secondary btn-join" type="button" id="button-join-gamer"
-                                (click)="onJoinAsGamerClick()" >
-                                Join as Gamer
-                            </button>
-                            <button class="btn btn-outline-secondary btn-join" type="button" id="button-join-viwer"
-                                (click)="onJoinAsViewerClick()" >
-                                Join as Viwer
-                            </button>
+
+                            <div *ngIf="isStarted">
+                                <span>
+                                    Local gamer: <b>black</b>, 
+                                    Remote gamer: <b>white</b> 
+                                </span>
+                                <br />
+                                <span class="multiplayer-info">
+                                    Room: {{ roomNameForCreate }}, PIN: {{ PINForJoin }}
+                                </span>
+                            </div>
                         </div>
                       </div>
                 </div>

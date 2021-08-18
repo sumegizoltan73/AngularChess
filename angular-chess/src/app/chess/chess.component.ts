@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ChessBase } from './chess-base.';
 import { ChessFactory } from './chess.factory';
 import './chess.helpers';
+import { io } from 'socket.io-client';
+
+const SOCKET_ENDPOINT = 'localhost:8080';
 
 @Component({
   selector: 'app-chess',
@@ -24,9 +27,12 @@ export class ChessComponent implements OnInit {
   private isGameStarted: boolean = false;
   private isSinglePlayerGame: boolean = true;
   private isMultiPlayerGameCreated: boolean = false;
+  private isMultiPlayerRoomCreated: boolean = false;
+  private isRemoteBlackGamerJoined: boolean = false;
   private isJoinedAsGamer: boolean = false;
   private isJoinedAsViewer: boolean = false;
   private localGamers: string[] = ['white', 'black'];
+  private socket;
 
   constructor() { 
     this.chessBase = ChessBase.instance;
@@ -38,6 +44,22 @@ export class ChessComponent implements OnInit {
     this.chessBase.events.subscribe('resign', () => { this.onResign(); });
 
     this.fillBoard();
+
+    this.socket = io(SOCKET_ENDPOINT);
+
+    this.socket.on('game-created', (PIN: string) => {
+      if (PIN) {
+        this.isMultiPlayerRoomCreated = true;
+        this.PINForJoin = PIN;
+      }
+    });
+
+    this.socket.on('game-joined', () => {
+      this.isGameStarted = true;
+      if (this.localGamers.includes('white')) {
+        this.isRemoteBlackGamerJoined = true;
+      }
+    });
   }
 
   get colorOfNext(): string {
@@ -151,6 +173,14 @@ export class ChessComponent implements OnInit {
     return this.isJoinedAsGamer || this.isJoinedAsViewer;
   }
 
+  get isRoomCreated(): boolean {
+    return this.isMultiPlayerRoomCreated;
+  }
+
+  get isBlackGamerJoined(): boolean {
+    return this.isRemoteBlackGamerJoined;
+  }
+
   get isPromoteWhite(): boolean {
     return this.chessBase.isPawnPromotionWhite;
   }
@@ -202,23 +232,28 @@ export class ChessComponent implements OnInit {
   }
 
   onCreateGameClick(): void {
-    if (this.roomNameForCreate) {
+    if (!this.isMultiPlayerGameCreated && this.roomNameForCreate) {
       this.isMultiPlayerGameCreated = true;
-
+      const i = this.localGamers.indexOf('black');
+      this.localGamers.splice(i, 1);
+      this.socket.emit('start-game', this.roomNameForCreate);
     }
   }
 
   onJoinAsGamerClick(): void {
-    if (this.roomNameForJoin && this.PINForJoin && this.PINForJoin.length === 4) {
+    if (!(this.isJoinedAsGamer || this.isJoinedAsViewer) && this.roomNameForJoin && this.PINForJoin && this.PINForJoin.length === 4) {
       this.isJoinedAsGamer = true;
-
+      const i = this.localGamers.indexOf('white');
+      this.localGamers.splice(i, 1);
+      this.socket.emit('join', this.roomNameForJoin, this.PINForJoin, false);
     }
   }
 
   onJoinAsViewerClick(): void {
-    if (this.roomNameForJoin && this.PINForJoin && this.PINForJoin.length === 4) {
+    if (!(this.isJoinedAsGamer || this.isJoinedAsViewer) && this.roomNameForJoin && this.PINForJoin && this.PINForJoin.length === 4) {
       this.isJoinedAsViewer = true;
-
+      this.localGamers = [];
+      this.socket.emit('join', this.roomNameForJoin, this.PINForJoin, true);
     }
   }
 

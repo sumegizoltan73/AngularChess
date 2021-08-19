@@ -1,13 +1,21 @@
 const express = require('express');
 const app = express();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const appIO = express();
 const cors = require('cors');
+
+//appIO.use(cors({ origin: 'http://localhost:4200' }));
+
+const http = require('http').Server(appIO);
+const io = require('socket.io')(http, {
+    cors: {
+      origin: "http://localhost:4200"
+    }
+});
 
 const rooms = {};
 const port = process.env.PORT || 8080;
+const portIO = process.env.PORT || 8081;
 
-//app.use(cors({ origin: 'http://localhost:4200' }));
 app.use(express.static('./public'));
 
 //app.get('/', (req, res) => res.send('hello!'));
@@ -20,14 +28,24 @@ app.listen(port, () => {
     console.log('listening on *:' + port);
 });
 
+http.listen(portIO, () => {
+    console.log('io listening on *:' + portIO);
+});
+
+io.on("connect_error", (err) => {
+    console.log(`connect_error due to ${err.message}`);
+});
+
 io.on('connection', (socket) => {
     socket.on('start-game', (room) => {
         const PIN = getPINForRoom(room);
         const roomId = room + '_' + PIN;
         socket.join(roomId);
-        rooms[roomId].players['white'] = socket.id;
-        rooms[roomId].viewers = [];
-        socket.to(room).broadcast.emit('game-created', PIN);
+        rooms[roomId] = { 
+            players: { white: socket.id },
+            viewers: [] 
+        };
+        io.in(roomId).emit('game-created', PIN);
     });
     socket.on('join', (room, PIN, isViewer) => {
         const roomId = room + '_' + PIN;
@@ -35,12 +53,12 @@ io.on('connection', (socket) => {
             socket.join(roomId);
             if (isViewer === true) {
                 rooms[roomId].viewers.push(socket.id);
-                socket.to(room).broadcast.emit('viewer-joined');
+                io.in(roomId).emit('viewer-joined');
             }
             else {
                 if (!('black' in rooms[roomId].players)) {
                     rooms[roomId].players['black'] = socket.id;
-                    socket.to(room).broadcast.emit('gamer-joined');
+                    io.in(roomId).emit('gamer-joined');
                 }
                 else {
                     socket.emit('invalid-gamer');

@@ -4,7 +4,7 @@ import { ChessFactory } from './chess.factory';
 import './chess.helpers';
 import { io } from 'socket.io-client';
 
-const SOCKET_ENDPOINT = 'localhost:8080';
+const SOCKET_ENDPOINT = 'http://localhost:8081';
 
 @Component({
   selector: 'app-chess',
@@ -54,7 +54,7 @@ export class ChessComponent implements OnInit {
       }
     });
 
-    this.socket.on('game-joined', () => {
+    this.socket.on('gamer-joined', () => {
       this.isGameStarted = true;
       if (this.localGamers.includes('white')) {
         this.isRemoteBlackGamerJoined = true;

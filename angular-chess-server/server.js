@@ -53,7 +53,8 @@ io.on('connection', (socket) => {
             socket.join(roomId);
             if (isViewer === true) {
                 rooms[roomId].viewers.push(socket.id);
-                io.in(roomId).emit('viewer-joined');
+                const isStarted = ('black' in rooms[roomId].players);
+                io.in(roomId).emit('viewer-joined', isStarted);
             }
             else {
                 if (!('black' in rooms[roomId].players)) {

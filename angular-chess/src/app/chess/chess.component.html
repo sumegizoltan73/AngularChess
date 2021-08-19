@@ -105,7 +105,7 @@
 
                     <div class="card" *ngIf="!isMultiplayerJoinOptionsDisabled">
                         <div class="card-body">
-                            <div *ngIf="!isStarted">
+                            <div *ngIf="!(isStarted || isJoinDisabled)">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Name of Room" [(ngModel)]="roomNameForJoin" />
                                     <input type="text" class="form-control" placeholder="PIN for Room" [(ngModel)]="PINForJoin" mask="0000" />
@@ -120,14 +120,18 @@
                                 </button>
                             </div>
 
-                            <div *ngIf="isStarted">
+                            <div *ngIf="isStarted || isViewerJoined">
                                 <span>
-                                    Local gamer: <b>black</b>, 
-                                    Remote gamer: <b>white</b> 
+                                    Local gamer: <b>{{ isViewerJoined ? '-': 'black' }}</b>, 
+                                    Remote gamer: <b>{{ isViewerJoined ? 'white, black': 'white' }}</b> 
+                                </span>
+                                <br />
+                                <span *ngIf="!isStarted && isViewerJoined" style="color: red;">
+                                    We are waiting for the black player to join...
                                 </span>
                                 <br />
                                 <span class="multiplayer-info">
-                                    Room: {{ roomNameForCreate }}, PIN: {{ PINForJoin }}
+                                    Room: {{ roomNameForJoin }}, PIN: {{ PINForJoin }}
                                 </span>
                             </div>
                         </div>

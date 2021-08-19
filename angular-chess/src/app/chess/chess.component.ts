@@ -60,6 +60,12 @@ export class ChessComponent implements OnInit {
         this.isRemoteBlackGamerJoined = true;
       }
     });
+
+    this.socket.on('viewer-joined', (isStarted: boolean) => {
+      this.isGameStarted = isStarted;
+
+      // if isStarted -> get board from white
+    });
   }
 
   get colorOfNext(): string {
@@ -179,6 +185,14 @@ export class ChessComponent implements OnInit {
 
   get isMultiplayerCreateOptionsDisabled(): boolean {
     return this.isJoinedAsGamer || this.isJoinedAsViewer;
+  }
+
+  get isJoinDisabled(): boolean {
+    return this.isJoinedAsGamer || this.isJoinedAsViewer;
+  }
+
+  get isViewerJoined(): boolean {
+    return this.isJoinedAsViewer;
   }
 
   get isRoomCreated(): boolean {

@@ -74,6 +74,12 @@
                             (change)="gameModeChange($event)" [disabled]="isStarted || isPlayerModeSelectionDisabled">
                         <label class="btn btn-outline-primary" for="multiPlayer">Multi player</label>
                     </div>
+
+                    <div class="gamer-info">
+                        <span *ngIf="isStarted && isSinglePlayer">White, Black</span>
+                        <span>{{ colorOfLocalGamer }}</span>
+                        <span *ngIf="isViewerJoined">Viewer</span>
+                    </div>
                 </div>
             </div>
 

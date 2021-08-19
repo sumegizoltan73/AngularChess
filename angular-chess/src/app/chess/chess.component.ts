@@ -59,12 +59,14 @@ export class ChessComponent implements OnInit {
       if (this.localGamers.includes('white')) {
         this.isRemoteBlackGamerJoined = true;
       }
+
+      this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
     });
 
     this.socket.on('viewer-joined', (isStarted: boolean) => {
       this.isGameStarted = isStarted;
 
-      // if isStarted -> get board from white
+      // if isStarted -> get board from white, get colorOfNext
     });
   }
 
@@ -78,6 +80,14 @@ export class ChessComponent implements OnInit {
 
   get colorOfWinner(): string {
     return (this.isCheckMateToWhite || this.isWhiteResigned) ? 'black' : (this.isCheckMateToBlack || this.isBlackResigned) ? 'white' : '';
+  }
+
+  get colorOfLocalGamer(): string {
+    let _retVal = '';
+    if (this.isMultiPlayer && (this.isJoinedAsGamer || this.isMultiPlayerGameCreated)) {
+      _retVal = this.localGamers[0].toUpperCaseFirstLetter();
+    }
+    return _retVal;
   }
 
   get isCheckToWhite(): boolean {

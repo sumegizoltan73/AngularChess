@@ -5,7 +5,7 @@
                 &nbsp;
                 <span *ngIf="isExistsInfoToBlack">{{ infoToBlack }}</span>
                 <button type="button" class="btn btn-primary btn-sm btn-resign" 
-                    (click)="onResignClick('black')" [disabled]="isGameEnded">
+                    (click)="onResignClick('black')" [disabled]="isGameEnded || isBlackResignDisabled">
                     Resign
                 </button>
             </div>
@@ -54,7 +54,7 @@
                 &nbsp;
                 <span *ngIf="isExistsInfoToWhite">{{ infoToWhite }}</span>
                 <button type="button" class="btn btn-primary btn-sm btn-resign" 
-                    (click)="onResignClick('white')" [disabled]="isGameEnded">
+                    (click)="onResignClick('white')" [disabled]="isGameEnded || isWhiteResignDisabled">
                     Resign
                 </button>
             </div>

@@ -147,6 +147,14 @@ export class ChessComponent implements OnInit {
     return this.isGameStarted;
   }
 
+  get isWhiteResignDisabled(): boolean {
+    return !this.localGamers.includes('white');
+  }
+
+  get isBlackResignDisabled(): boolean {
+    return !this.localGamers.includes('black');
+  }
+
   get isSinglePlayer(): boolean {
     return this.isSinglePlayerGame;
   }

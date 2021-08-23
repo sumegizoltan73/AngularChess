@@ -70,6 +70,12 @@ io.on('connection', (socket) => {
             socket.emit('invalid-room');
         }
     });
+    socket.on('step', (room, PIN, eventArgs) => {
+        const roomId = room + '_' + PIN;
+        if (roomId in rooms) {
+            io.in(roomId).emit('step', eventArgs);
+        }
+    });
 });
 
 function getPINForRoom(room){

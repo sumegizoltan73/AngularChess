@@ -70,6 +70,10 @@ export class ChessBase {
         return (cell && cell.figure)? cell.figure : null;
     }
 
+    stepFromRemote(step: IStep): void {
+        this.step(step);
+    }
+
     stepAwayIfPossible(step: IStep): void {
         this.isLoaderVisible = true;
         this.isHitEnemyKingCanBeTested = false;
@@ -89,7 +93,7 @@ export class ChessBase {
                 this.enPassant = null;
             }
 
-            const arg = this.stateAfterStep(step);
+            let arg = this.stateAfterStep(step);
 
             this.step(step);
             if (arg && arg.state === 'castling' && (!this.isCheckToKing(fig!.color))) {
@@ -122,6 +126,9 @@ export class ChessBase {
                 }
                 this.isHitEnemyKingCanBeTested = false;
                 this.isLoaderVisible = false;
+                if (!arg) arg = {};
+                arg['color'] = fig?.color;
+                arg['step'] = step;
                 this.events.emit('stepFinished', arg);
             }
             catch (ex) {

@@ -82,6 +82,24 @@ export class ChessComponent implements OnInit {
       this.localGamers = ['white', 'black'];
       this.joinMsg = 'Invalid gamer! (All players have already joined this room.)';
     });
+
+    this.socket.on('step', (eventArgs) => {
+      if (!this.localGamers.includes(eventArgs.color)){
+        this.chessBase.stepFromRemote(eventArgs.step);
+
+        if ('additionalStep' in eventArgs) {
+          this.chessBase.stepFromRemote(eventArgs.additionalStep);
+        }
+
+        if (!(eventArgs.state && eventArgs.state === 'pawn_promotion')) {
+          this.isWhiteNext = !this.isWhiteNext;
+          this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
+
+          // test check, checkmate, dead position, stalemate
+          this.chessBase.processCombinatedTests(this.colorOfNext);
+        }
+      }
+    });
   }
 
   get colorOfNext(): string {
@@ -350,6 +368,11 @@ export class ChessComponent implements OnInit {
 
       // test check, checkmate, dead position, stalemate
       this.chessBase.processCombinatedTests(this.colorOfNext);
+    }
+
+    if (this.isMultiPlayer && this.localGamers.includes(eventArgs.color)){
+      const roomName: string = (eventArgs.color === 'white') ? this.roomNameForCreate : this.roomNameForJoin;
+      this.socket.emit('step', roomName, this.PINForJoin, eventArgs);
     }
   }
 

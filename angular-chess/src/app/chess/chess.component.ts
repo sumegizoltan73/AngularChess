@@ -85,10 +85,10 @@ export class ChessComponent implements OnInit {
 
     this.socket.on('step', (eventArgs) => {
       if (!this.localGamers.includes(eventArgs.color)){
-        this.chessBase.stepFromRemote(eventArgs.step);
+        this.chessBase.stepFromRemote(eventArgs.step, eventArgs.enPassant);
 
         if ('additionalStep' in eventArgs) {
-          this.chessBase.stepFromRemote(eventArgs.additionalStep);
+          this.chessBase.stepFromRemote(eventArgs.additionalStep, null);
         }
 
         if (!(eventArgs.state && eventArgs.state === 'pawn_promotion')) {

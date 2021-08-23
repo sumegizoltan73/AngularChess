@@ -70,8 +70,23 @@ export class ChessBase {
         return (cell && cell.figure)? cell.figure : null;
     }
 
-    stepFromRemote(step: IStep): void {
+    stepFromRemote(step: IStep, enPassant: any): void {
+        const fig = this.getFigure(step.from!.x, step.from!.y);
+        if (this.enPassant) {
+            if (fig && fig.name === 'pawn'
+                && step.to!.x === this.enPassant.to.x
+                && step.to!.y === this.enPassant.to.y) {
+                // remove prisoner
+                this.removePrisoner();
+            }
+            // en passant just in the next step
+            this.enPassant = null;
+        }
         this.step(step);
+
+        if (enPassant) {
+            this.enPassant = enPassant;
+        }
     }
 
     stepAwayIfPossible(step: IStep): void {

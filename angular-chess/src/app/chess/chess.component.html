@@ -140,6 +140,10 @@
                                     Room: {{ roomNameForJoin }}, PIN: {{ PINForJoin }}
                                 </span>
                             </div>
+
+                            <span *ngIf="joinMsg" style="color: red;">
+                                {{ joinMsg }}
+                            </span>
                         </div>
                       </div>
                 </div>

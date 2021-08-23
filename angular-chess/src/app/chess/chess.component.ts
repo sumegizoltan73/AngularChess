@@ -16,6 +16,7 @@ export class ChessComponent implements OnInit {
   x: string[] = ['a','b','c','d','e','f','g','h'];
   y: string[] = ['8','7','6','5','4','3','2','1'];
   msg: string = '';
+  joinMsg: string = '';
   roomNameForCreate: string = '';
   roomNameForJoin: string = '';
   PINForJoin: string = '';
@@ -67,6 +68,19 @@ export class ChessComponent implements OnInit {
       this.isGameStarted = isStarted;
 
       // if isStarted -> get board from white, get colorOfNext
+    });
+
+    this.socket.on('invalid-room', () => {
+      this.isJoinedAsGamer = false;
+      this.isJoinedAsViewer = false;
+      this.localGamers = ['white', 'black'];
+      this.joinMsg = 'Invalid room or PIN!';
+    });
+
+    this.socket.on('invalid-gamer', () => {
+      this.isJoinedAsGamer = false;
+      this.localGamers = ['white', 'black'];
+      this.joinMsg = 'Invalid gamer! (All players have already joined this room.)';
     });
   }
 
@@ -275,6 +289,7 @@ export class ChessComponent implements OnInit {
   onJoinAsGamerClick(): void {
     if (!(this.isJoinedAsGamer || this.isJoinedAsViewer) && this.roomNameForJoin && this.PINForJoin && this.PINForJoin.length === 4) {
       this.isJoinedAsGamer = true;
+      this.joinMsg = '';
       const i = this.localGamers.indexOf('white');
       this.localGamers.splice(i, 1);
       this.socket.emit('join', this.roomNameForJoin, this.PINForJoin, false);
@@ -284,6 +299,7 @@ export class ChessComponent implements OnInit {
   onJoinAsViewerClick(): void {
     if (!(this.isJoinedAsGamer || this.isJoinedAsViewer) && this.roomNameForJoin && this.PINForJoin && this.PINForJoin.length === 4) {
       this.isJoinedAsViewer = true;
+      this.joinMsg = '';
       this.localGamers = [];
       this.socket.emit('join', this.roomNameForJoin, this.PINForJoin, true);
     }

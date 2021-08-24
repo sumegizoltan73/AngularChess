@@ -83,7 +83,7 @@ export class ChessComponent implements OnInit {
       this.joinMsg = 'Invalid gamer! (All players have already joined this room.)';
     });
 
-    this.socket.on('step', (eventArgs) => {
+    this.socket.on('step-to', (eventArgs) => {
       if (!this.localGamers.includes(eventArgs.color)){
         this.chessBase.stepFromRemote(eventArgs.step, eventArgs.enPassant);
 
@@ -91,13 +91,31 @@ export class ChessComponent implements OnInit {
           this.chessBase.stepFromRemote(eventArgs.additionalStep, null);
         }
 
-        if (!(eventArgs.state && eventArgs.state === 'pawn_promotion')) {
+        if (eventArgs.state && eventArgs.state === 'pawn_promotion') {
+          this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next. We are waiting for the pawn to convert.';
+        }
+        else {
           this.isWhiteNext = !this.isWhiteNext;
           this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
 
           // test check, checkmate, dead position, stalemate
+          if (this.isCheckToWhite || this.isCheckToBlack) {
+            this.chessBase.testCheckForRemote(eventArgs.color);  
+          }
           this.chessBase.processCombinatedTests(this.colorOfNext);
         }
+      }
+    });
+
+    this.socket.on('pawn-converted', (name, color, step) => {
+      if (!this.localGamers.includes(color)){
+        this.chessBase.convertPawnFromRemote(name, color, step);
+
+        this.isWhiteNext = !this.isWhiteNext;
+        this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
+
+        // test check, checkmate, dead position, stalemate
+        this.chessBase.processCombinatedTests(this.colorOfNext);
       }
     });
   }
@@ -287,7 +305,13 @@ export class ChessComponent implements OnInit {
 
   onPromotionClick(name: string, i: number): void {
     const color = (this.isPromoteWhite) ? 'white' : 'black';
+
+    if (this.isMultiPlayer && this.localGamers.includes(color)) {
+      const roomName: string = (color === 'white') ? this.roomNameForCreate : this.roomNameForJoin;
+      this.socket.emit('convert-pawn', roomName, this.PINForJoin, name, color, this.step);
+    }
     
+    console.log('onPromotionClick');
     this.chessBase.convertPawn(name, color, this.step, i);
   }
 
@@ -361,6 +385,7 @@ export class ChessComponent implements OnInit {
       this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next. Convert the pawn to another!';
     }
     else {
+      console.log('onStep(null)');
       this.step = { from: null, to: null };
       this.isClickedFrom = !this.isClickedFrom;
       this.isWhiteNext = !this.isWhiteNext;
@@ -370,13 +395,14 @@ export class ChessComponent implements OnInit {
       this.chessBase.processCombinatedTests(this.colorOfNext);
     }
 
-    if (this.isMultiPlayer && this.localGamers.includes(eventArgs.color)){
+    if (eventArgs && this.isMultiPlayer && this.localGamers.includes(eventArgs.color)){
       const roomName: string = (eventArgs.color === 'white') ? this.roomNameForCreate : this.roomNameForJoin;
       this.socket.emit('step', roomName, this.PINForJoin, eventArgs);
     }
   }
 
   private onPromotion(): void {
+    console.log('onPromotion');
     this.onStep(null);
   }
 
@@ -406,6 +432,7 @@ export class ChessComponent implements OnInit {
       this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ': Click the next cell!';
     }
     else {
+      console.log(fig?.color, this.colorOfNext);
       this.msg = 'This step is illegal! ' + this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
     }
   }

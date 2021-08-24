@@ -225,6 +225,15 @@ export class ChessBase {
         this.events.emit('promotionFinished', null);
     }
 
+    convertPawnFromRemote(name: string, color: string, step: IStep): void {
+        this.removeFigure(step.to!.x, step.to!.y);
+        ChessFactory.createFigure(name, color, step.to!.x, step.to!.y);
+    }
+
+    testCheckForRemote(color: string): void {
+        this.testCheck(color, false, true, false);
+    }
+
     processCombinatedTests(color: string): void {
         this.isTestInProgress = true;
         this.isLoaderVisible = true;
@@ -553,6 +562,12 @@ export class ChessBase {
 
             if (throwOnCheck === true) {
                 throw new Error('Check occured!');
+            }
+        }
+        else {
+            if (setVariables === true) {
+                this.isCheckToWhite = (color === 'white') ? false: this.isCheckToWhite;
+                this.isCheckToBlack = (color === 'black') ? false: this.isCheckToBlack;
             }
         }
     }

@@ -73,7 +73,13 @@ io.on('connection', (socket) => {
     socket.on('step', (room, PIN, eventArgs) => {
         const roomId = room + '_' + PIN;
         if (roomId in rooms) {
-            io.in(roomId).emit('step', eventArgs);
+            io.in(roomId).emit('step-to', eventArgs);
+        }
+    });
+    socket.on('convert-pawn', (room, PIN, name, color, step) => {
+        const roomId = room + '_' + PIN;
+        if (roomId in rooms) {
+            io.in(roomId).emit('pawn-converted', name, color, step);
         }
     });
 });

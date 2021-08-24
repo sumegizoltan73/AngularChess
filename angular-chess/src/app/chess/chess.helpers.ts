@@ -14,3 +14,18 @@ String.prototype.toUpperCaseFirstLetter = function(): string {
 
     return str;
 };
+
+String.prototype.toLowerCaseFirstLetter = function(): string { 
+    let str = '';
+
+    if (this.length > 0) {
+        if (this.length > 1) {
+            str = this.substr(0, 1).toLowerCase() + this.substr(1, this.length - 1);
+        }
+        else {
+            str = this.toLowerCase();
+        }
+    }
+
+    return str;
+};

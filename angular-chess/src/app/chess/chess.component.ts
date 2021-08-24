@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ChessBase } from './chess-base.';
 import { ChessFactory } from './chess.factory';
 import './chess.helpers';
@@ -11,7 +11,7 @@ const SOCKET_ENDPOINT = 'http://localhost:8081';
   templateUrl: './chess.component.html',
   styleUrls: ['./chess.component.less']
 })
-export class ChessComponent implements OnInit {
+export class ChessComponent implements OnInit, OnDestroy {
 
   x: string[] = ['a','b','c','d','e','f','g','h'];
   y: string[] = ['8','7','6','5','4','3','2','1'];
@@ -20,6 +20,7 @@ export class ChessComponent implements OnInit {
   roomNameForCreate: string = '';
   roomNameForJoin: string = '';
   PINForJoin: string = '';
+  socket;
 
   private chessBase: ChessBase;
   private isWhiteNext: boolean = true;
@@ -33,7 +34,6 @@ export class ChessComponent implements OnInit {
   private isJoinedAsGamer: boolean = false;
   private isJoinedAsViewer: boolean = false;
   private localGamers: string[] = ['white', 'black'];
-  private socket;
 
   constructor() { 
     this.chessBase = ChessBase.instance;
@@ -288,6 +288,19 @@ export class ChessComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+  
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload($event: any) {
+    this.ngOnDestroy();
+    $event.preventDefault(); 
+    delete $event['returnValue'];
+  }
+
+  async ngOnDestroy() {
+    if (this.isMultiPlayer) {
+      this.msg = 'Disconnecting...';
+    }
   }
 
   onCellClick(x: number, y: number): void {

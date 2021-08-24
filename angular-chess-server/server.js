@@ -82,7 +82,66 @@ io.on('connection', (socket) => {
             io.in(roomId).emit('pawn-converted', name, color, step);
         }
     });
+
+    socket.on('disconnect', () => {
+        const userData = getUserData(socket.id);
+
+        if (userData.player) {
+            const roomId = userData.roomId;
+            const player = userData.player;
+
+            if (player === 'white') {
+                delete rooms[roomId].players.white;
+            }
+            else if (player === 'black') {
+                delete rooms[roomId].players.black;
+            }
+            else {
+                const index = rooms[roomId].viewers.indexOf(socket.id);
+                rooms[roomId].viewers.splice(index, 1);
+            }
+            
+            if (!(('white' in rooms[roomId].players) && ('black' in rooms[roomId].players))) {
+                delete rooms[roomId];
+            }
+        }
+    });
 });
+
+function getUserData(socketId) {
+    const _retVal = {
+        roomId: '',
+        player: ''
+    };
+
+    for (const key in rooms) {
+        if (Object.hasOwnProperty.call(rooms, key)) {
+            if (!_retVal.roomId) {
+                const player = getPlayerType(key, socketId);
+                if (player) {
+                    _retVal['roomId'] = key;
+                    _retVal['player'] = player;
+                }
+            }
+        }
+    }
+
+    return _retVal;
+}
+
+function getPlayerType(roomId, socketId) {
+    if (rooms[roomId].players && rooms[roomId].players.white === socketId) {
+        return 'white';
+    }
+    else if (rooms[roomId].players && rooms[roomId].players.black === socketId) {
+        return 'black';
+    }
+    else if (rooms[roomId].viewers && rooms[roomId].viewers.includes(socketId)) {
+        return 'viewer';
+    } 
+
+    return null;
+}
 
 function getPINForRoom(room){
     let PIN = null;

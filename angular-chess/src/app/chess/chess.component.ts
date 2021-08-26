@@ -4,7 +4,7 @@ import { ChessFactory } from './chess.factory';
 import './chess.helpers';
 import { io } from 'socket.io-client';
 
-const SOCKET_ENDPOINT = 'http://angular-chess-api.azurewebsites.net';
+const SOCKET_ENDPOINT = 'http://angular-chess.azurewebsites.net';
 
 @Component({
   selector: 'app-chess',
@@ -46,7 +46,9 @@ export class ChessComponent implements OnInit, OnDestroy {
 
     this.fillBoard();
 
-    this.socket = io(SOCKET_ENDPOINT);
+    this.socket = io(SOCKET_ENDPOINT, {
+      transports: ["polling", "websocket"]
+    });
 
     this.socket.on('game-created', (PIN: string) => {
       if (PIN) {

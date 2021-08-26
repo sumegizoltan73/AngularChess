@@ -4,7 +4,7 @@ import { ChessFactory } from './chess.factory';
 import './chess.helpers';
 import { io } from 'socket.io-client';
 
-const SOCKET_ENDPOINT = 'http://localhost:8081';
+const SOCKET_ENDPOINT = 'http://angular-chess-api.azurewebsites.net';
 
 @Component({
   selector: 'app-chess',

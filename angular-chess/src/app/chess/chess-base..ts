@@ -95,6 +95,7 @@ export class ChessBase {
 
         const fig = this.getFigure(step.from!.x, step.from!.y);
         const isPossible = fig?.isStepPossible(step);
+        let strike = false;
 
         if (isPossible) {
             if (this.enPassant) {
@@ -103,6 +104,7 @@ export class ChessBase {
                     && step.to!.y === this.enPassant.to.y) {
                     // remove prisoner
                     this.removePrisoner();
+                    strike = true;
                 }
                 // en passant just in the next step
                 this.enPassant = null;
@@ -110,7 +112,9 @@ export class ChessBase {
 
             let arg = this.stateAfterStep(step);
 
-            this.step(step);
+            const strikeInStep = this.step(step);
+            strike = strike || strikeInStep;
+
             if (arg && arg.state === 'castling' && (!this.isCheckToKing(fig!.color))) {
                 // castling is not possible in chess
                 this.step(arg.additionalStep);
@@ -144,6 +148,8 @@ export class ChessBase {
                 if (!arg) arg = {};
                 arg['color'] = fig?.color;
                 arg['step'] = step;
+                arg['strike'] = strike;
+                arg['fig'] = fig?.name;
                 this.events.emit('stepFinished', arg);
             }
             catch (ex) {
@@ -589,7 +595,8 @@ export class ChessBase {
         }
     }
 
-    private step(step: IStep): void {
+    private step(step: IStep): boolean {
+        let _retVal = false;
         const figTo = this.getFigure(step.to!.x, step.to!.y);
         if (figTo) {
             this.revertFigureBuffer = {
@@ -598,6 +605,7 @@ export class ChessBase {
                 figure: figTo
             };
             this.removeFigure(step.to!.x, step.to!.y);
+            _retVal = true;
 
             if (figTo.name !== 'pawn') {
                 if (figTo.color === 'white') {
@@ -627,9 +635,8 @@ export class ChessBase {
             figure: fig
         });
         this.removeFigure(step.from!.x, step.from!.y);
-        
-        // emit for displaying steps
-        this.events.emit('step', step);
+
+        return _retVal;
     }
 
     private removeFigure(x: number, y: number): void {

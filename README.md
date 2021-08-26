@@ -31,11 +31,8 @@ If the player's pawn reaches the opponent's starting line, you can choose to exc
 
 ### Opportunity for further development
 
-- List the steps until the end of the game,
-- Display of steps with official marking of chess games,
 - Multilingualism,
 - Timer, with separate measurements for each color,
-- Chat list and step list separately,
 - Save and reload game (including step list)
 - Synchronize reload in case of pairing,
 - Email forwarding,
@@ -68,11 +65,8 @@ Ha a játékos gyalogja beér az elenfél kiinduló sorába, akkor a korábban e
 
 ### Továbbfejlesztési lehetőség
 
-- A lépések listaszerű megjelenítése a játék végéig,
-- A lépések sakkjátékok hivatalos jelölésével történő megjelenítése,
 - Többnyelvűsítés,
 - Időmérő, színenként külön méréssel,
-- Chat lista és lépés lista külön,
 - Játék mentése és visszatöltése (lépéslista is),
 - Visszatöltés szinkronizálása párosítás esetén,
 - Mentés továbbítása email-en,

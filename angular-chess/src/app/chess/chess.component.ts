@@ -3,8 +3,70 @@ import { ChessBase } from './chess-base.';
 import { ChessFactory } from './chess.factory';
 import './chess.helpers';
 import { io } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 
-const SOCKET_ENDPOINT = 'http://angular-chess.azurewebsites.net';
+export class StepDetail implements IStepDetail {
+  
+  private x: string[] = ['a','b','c','d','e','f','g','h'];
+  private y: string[] = ['8','7','6','5','4','3','2','1'];
+
+  constructor(public step: IStep, public additionalStep: IStep | null, public fig: string,
+      public isStrike: boolean = false, public isCheck: boolean = false, public isCheckMate: boolean = false,
+      public isShowFromX: boolean = false,  public isShowFromY: boolean = false) {
+    if (this.additionalStep) {
+      this.isShowFromX = false;
+      this.isShowFromY = false;
+    }
+  }
+
+  get figure(): string {
+    let _retVal = this.fig;
+
+    if (this.fig === 'pawn') {
+      _retVal = '';
+    }
+    else if (this.additionalStep) {
+      _retVal = 'king';
+    }
+
+    return _retVal;
+  }
+
+  get castling(): string {
+    let _retVal = '';
+
+    if (this.additionalStep) {
+      _retVal = (this.additionalStep.to?.x === 6) ? ' 0-0': ' 0-0-0';
+    }
+
+    return _retVal;
+  }
+
+  get notation(): string {
+    let _retVal = '';
+
+    if ((!this.figure && this.isStrike) || this.isShowFromX || this.isShowFromY) {
+      _retVal += (this.step) ? this.x[this.step.from!.x] : '';
+    }
+    if (this.isShowFromY) {
+      _retVal += (this.step) ? this.y[this.step.from!.y] : '';
+    }
+    if (this.isStrike) {
+      _retVal += 'x';
+    }
+    _retVal += (this.step) ? this.x[this.step.to!.x] : '';
+    _retVal += (this.step) ? this.y[this.step.to!.y] : '';
+    _retVal += this.castling;
+    if (!this.isCheckMate && this.isCheck) {
+      _retVal += '+';
+    }
+    if (this.isCheckMate) {
+      _retVal += '#';
+    }
+
+    return _retVal;
+  }
+} 
 
 @Component({
   selector: 'app-chess',
@@ -21,6 +83,7 @@ export class ChessComponent implements OnInit, OnDestroy {
   roomNameForJoin: string = '';
   PINForJoin: string = '';
   socket;
+  steps: IStepNotation[] = [];
 
   private chessBase: ChessBase;
   private isWhiteNext: boolean = true;
@@ -46,7 +109,7 @@ export class ChessComponent implements OnInit, OnDestroy {
 
     this.fillBoard();
 
-    this.socket = io(SOCKET_ENDPOINT, {
+    this.socket = io(environment.SOCKET_ENDPOINT, {
       transports: ["polling", "websocket"]
     });
 
@@ -106,6 +169,8 @@ export class ChessComponent implements OnInit, OnDestroy {
           }
           this.chessBase.processCombinatedTests(this.colorOfNext);
         }
+
+        this.setStepNotation(eventArgs);
       }
     });
 
@@ -400,7 +465,7 @@ export class ChessComponent implements OnInit, OnDestroy {
       this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next. Convert the pawn to another!';
     }
     else {
-      console.log('onStep(null)');
+      console.log('onStep() - else');
       this.step = { from: null, to: null };
       this.isClickedFrom = !this.isClickedFrom;
       this.isWhiteNext = !this.isWhiteNext;
@@ -410,10 +475,103 @@ export class ChessComponent implements OnInit, OnDestroy {
       this.chessBase.processCombinatedTests(this.colorOfNext);
     }
 
+    this.setStepNotation(eventArgs);
+
     if (eventArgs && this.isMultiPlayer && this.localGamers.includes(eventArgs.color)){
       const roomName: string = (eventArgs.color === 'white') ? this.roomNameForCreate : this.roomNameForJoin;
       this.socket.emit('step', roomName, this.PINForJoin, eventArgs);
     }
+  }
+
+  private setStepNotation(eventArgs: any): void {
+    if (eventArgs) {
+      if (eventArgs.color === 'white') {
+        // new notation
+        const item: IStepNotation = { 
+          white: new StepDetail(
+            eventArgs.step,
+            eventArgs.additionalStep ? eventArgs.additionalStep : null,
+            eventArgs.fig,
+            eventArgs.strike,
+            this.isCheckToBlack,
+            this.isCheckMateToBlack,
+            this.getShowFromX(eventArgs.fig, 'white', eventArgs.step),
+            this.getShowFromY(eventArgs.fig, 'white', eventArgs.step)
+            ), 
+          black: null };
+        
+        this.steps.push(item);
+      }
+      else {
+        // last notation
+        const item = this.steps[this.steps.length - 1];
+        item.black = new StepDetail(
+          eventArgs.step,
+          eventArgs.additionalStep ? eventArgs.additionalStep : null,
+          eventArgs.fig,
+          eventArgs.strike,
+          this.isCheckToWhite,
+          this.isCheckMateToWhite,
+          this.getShowFromX(eventArgs.fig, 'black', eventArgs.step),
+          this.getShowFromY(eventArgs.fig, 'black', eventArgs.step)
+        );
+      }
+    }
+    else {
+      const item = this.steps[this.steps.length - 1];
+      if (this.isWhiteNext) {
+        // set black
+        item.black!.isCheck = this.isCheckToBlack;
+        item.black!.isCheckMate = this.isCheckMateToBlack;
+      }
+      else {
+        // set white
+        item.white!.isCheck = this.isCheckToWhite;
+        item.white!.isCheckMate = this.isCheckMateToWhite;
+      }
+    }
+  }
+
+  private getShowFromX(figure: string, color: string, step: IStep): boolean {
+    let _retVal = false;
+
+    if (figure === 'rook') {
+      if (step.from?.y === step.to?.y) {
+        for (let i = 0; i < 8; i++) {
+          if (i !== step.from?.x && i !== step.to?.x) {
+            const fig = this.chessBase.getFigure(i, step.from!.y);
+
+            if (fig && fig.name === 'rook' && fig.color === color) {
+              _retVal = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return _retVal;
+  }
+
+  private getShowFromY(figure: string, color: string, step: IStep): boolean {
+    let _retVal = false;
+
+    if (figure === 'rook') {
+      if (step.from?.x === step.to?.x) {
+        for (let i = 0; i < 8; i++) {
+          if (i !== step.from?.y && i !== step.to?.y) {
+            const fig = this.chessBase.getFigure(step.from!.x, i);
+
+            if (fig && fig.name === 'rook' && fig.color === color) {
+              _retVal = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return _retVal;
   }
 
   private onPromotion(): void {

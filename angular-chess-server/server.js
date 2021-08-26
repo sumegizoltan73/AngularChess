@@ -2,10 +2,15 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 
+let originUrl = "http://angular-chess.azurewebsites.net";
+if (process.env.NODE_ENV === "development") {
+    originUrl = "http://localhost:4200";
+}
+
 const http = require('http').Server(app);
 const io = require('socket.io')(http, {
     cors: {
-      origin: "http://angular-chess.azurewebsites.net"
+      origin: originUrl
     },
     transports: ["polling", "websocket"]
 });

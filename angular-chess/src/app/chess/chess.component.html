@@ -148,6 +148,30 @@
                       </div>
                 </div>
             </div>
+
+            <div class="row" *ngIf="isStarted">
+                <div class="col steps">
+                    <h4>Step notation</h4>
+                    <ol>
+                        <li *ngFor="let step of steps; let j = index;">
+                            <span>
+                                <span class="chess-icons s16" [ngClass]="'white ' + step.white.figure" *ngIf="step.white.figure"></span>
+                                {{step.white.notation}}
+                            </span>
+                            <span style="margin-left: 20px;" *ngIf="step.black">
+                                <span class="chess-icons s16" [ngClass]="'black ' + step.black?.figure" *ngIf="step.black?.figure"></span>
+                                {{step.black?.notation}}
+                            </span>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="col">
+                    <div class="chat" *ngIf="!isViewerJoined && isMultiPlayer">
+                        <h4>Chat</h4>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

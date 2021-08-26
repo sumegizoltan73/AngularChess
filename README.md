@@ -8,6 +8,14 @@
 
 ## EN 
 
+### Skills
+
+- Multiplayer (with Remote player) / Singleplayer (with Local players)
+- Spectators can also join the multiplayer rooms
+- Step notation
+
+![Angular Chess](/angular-chess/src/assets/chess_5.PNG)
+
 ### Behavior
 
 Chess pieces are placed on the board as an object through an initialization procedure.
@@ -41,6 +49,14 @@ If the player's pawn reaches the opponent's starting line, you can choose to exc
 - Display as a Blazor hybrid app using client-side code (for all platforms).
 
 ## HU 
+
+### Képességek
+
+- Többjátékos mód (távoli játékossal) / Helyi mód
+- Néző is csatlakozhat a többjátékos módú szobákhoz
+- Lépés jegyzék
+
+![Angular Chess](/angular-chess/src/assets/chess_5.PNG)
 
 ### Működés
 

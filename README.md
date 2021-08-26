@@ -4,7 +4,7 @@
 
 ## Demo
 
-[Angular Chess Azure website](https://angular-chess.azurewebsites.net)
+[Angular Chess Azure website](http://angular-chess.azurewebsites.net)
 
 ## Működés
 

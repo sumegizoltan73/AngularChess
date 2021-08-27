@@ -38,3 +38,10 @@ interface IStepNotation {
     white: IStepDetail;
     black: IStepDetail | null;
 }
+
+interface IChatMessage {
+    player: string;
+    name: string;
+    message: string;
+    isOwnMessage: boolean;
+}

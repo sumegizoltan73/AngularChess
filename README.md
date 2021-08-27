@@ -13,8 +13,11 @@
 - Multiplayer (with Remote player) / Singleplayer (with Local players)
 - Spectators can also join the multiplayer rooms
 - Step notation
+- Chat in Multiplayer mode 
 
 ![Angular Chess](/angular-chess/src/assets/chess_5.PNG)
+
+![Angular Chess - chat](/angular-chess/src/assets/chess_6.PNG)
 
 ### Behavior
 
@@ -55,6 +58,7 @@ If the player's pawn reaches the opponent's starting line, you can choose to exc
 - Többjátékos mód (távoli játékossal) / Helyi mód
 - Néző is csatlakozhat a többjátékos módú szobákhoz
 - Lépés jegyzék
+- Chat a többjátékos módban
 
 ![Angular Chess](/angular-chess/src/assets/chess_5.PNG)
 

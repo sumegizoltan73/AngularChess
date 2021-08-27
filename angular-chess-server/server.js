@@ -38,6 +38,7 @@ io.on('connection', (socket) => {
             viewers: [] 
         };
         io.in(roomId).emit('game-created', PIN);
+        socket.emit('id', socket.id);
     });
     socket.on('join', (room, PIN, isViewer) => {
         const roomId = room + '_' + PIN;
@@ -47,11 +48,13 @@ io.on('connection', (socket) => {
                 rooms[roomId].viewers.push(socket.id);
                 const isStarted = ('black' in rooms[roomId].players);
                 io.in(roomId).emit('viewer-joined', isStarted);
+                socket.emit('id', socket.id);
             }
             else {
                 if (!('black' in rooms[roomId].players)) {
                     rooms[roomId].players['black'] = socket.id;
                     io.in(roomId).emit('gamer-joined');
+                    socket.emit('id', socket.id);
                 }
                 else {
                     socket.emit('invalid-gamer');
@@ -72,6 +75,12 @@ io.on('connection', (socket) => {
         const roomId = room + '_' + PIN;
         if (roomId in rooms) {
             io.in(roomId).emit('pawn-converted', name, color, step);
+        }
+    });
+    socket.on('message', (room, PIN, player, name, id, message) => {
+        const roomId = room + '_' + PIN;
+        if (roomId in rooms) {
+            io.in(roomId).emit('message-sended', player, name, id, message);
         }
     });
 

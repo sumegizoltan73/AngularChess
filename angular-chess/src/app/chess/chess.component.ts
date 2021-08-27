@@ -82,8 +82,11 @@ export class ChessComponent implements OnInit, OnDestroy {
   roomNameForCreate: string = '';
   roomNameForJoin: string = '';
   PINForJoin: string = '';
+  nameForChat: string = '';
+  messageForChat: string = '';
   socket;
   steps: IStepNotation[] = [];
+  chatMessages: IChatMessage[] = [];
 
   private chessBase: ChessBase;
   private isWhiteNext: boolean = true;
@@ -97,6 +100,7 @@ export class ChessComponent implements OnInit, OnDestroy {
   private isJoinedAsGamer: boolean = false;
   private isJoinedAsViewer: boolean = false;
   private localGamers: string[] = ['white', 'black'];
+  private socketId: string = '';
 
   constructor() { 
     this.chessBase = ChessBase.instance;
@@ -133,6 +137,10 @@ export class ChessComponent implements OnInit, OnDestroy {
       this.isGameStarted = isStarted;
 
       // if isStarted -> get board from white, get colorOfNext
+    });
+
+    this.socket.on('id', (socketId: string) => {
+      this.socketId = socketId;
     });
 
     this.socket.on('invalid-room', () => {
@@ -184,6 +192,16 @@ export class ChessComponent implements OnInit, OnDestroy {
         // test check, checkmate, dead position, stalemate
         this.chessBase.processCombinatedTests(this.colorOfNext);
       }
+    });
+
+    this.socket.on('message-sended', (player, name, socketId, message) => {
+      const chatmessage: IChatMessage = {
+        player: player,
+        name: name,
+        message: message,
+        isOwnMessage: (this.socketId === socketId)
+      };
+      this.chatMessages.push(chatmessage);
     });
   }
 
@@ -425,6 +443,12 @@ export class ChessComponent implements OnInit, OnDestroy {
       this.localGamers = [];
       this.socket.emit('join', this.roomNameForJoin, this.PINForJoin, true);
     }
+  }
+
+  onSendMessageClick(): void {
+    const roomName: string = (this.roomNameForCreate) ? this.roomNameForCreate : this.roomNameForJoin;
+    this.socket.emit('message', roomName, this.PINForJoin, this.colorOfLocalGamer.toLowerCaseFirstLetter(), this.nameForChat, this.socketId, this.messageForChat);
+    this.messageForChat = '';
   }
 
   gameModeChange(e: Event): void {

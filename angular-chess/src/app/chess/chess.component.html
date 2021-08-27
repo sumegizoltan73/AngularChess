@@ -150,25 +150,52 @@
             </div>
 
             <div class="row" *ngIf="isStarted">
-                <div class="col steps">
-                    <h4>Step notation</h4>
-                    <ol>
-                        <li *ngFor="let step of steps; let j = index;">
-                            <span>
-                                <span class="chess-icons s16" [ngClass]="'white ' + step.white.figure" *ngIf="step.white.figure"></span>
-                                {{step.white.notation}}
-                            </span>
-                            <span style="margin-left: 20px;" *ngIf="step.black">
-                                <span class="chess-icons s16" [ngClass]="'black ' + step.black?.figure" *ngIf="step.black?.figure"></span>
-                                {{step.black?.notation}}
-                            </span>
-                        </li>
-                    </ol>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body steps">
+                            <h5 class="card-title">Step notation</h5>
+                            <ol>
+                                <li *ngFor="let step of steps; let j = index;">
+                                    <span>
+                                        <span class="chess-icons s16" [ngClass]="'white ' + step.white.figure" *ngIf="step.white.figure"></span>
+                                        {{step.white.notation}}
+                                    </span>
+                                    <span style="margin-left: 20px;" *ngIf="step.black">
+                                        <span class="chess-icons s16" [ngClass]="'black ' + step.black?.figure" *ngIf="step.black?.figure"></span>
+                                        {{step.black?.notation}}
+                                    </span>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col">
-                    <div class="chat" *ngIf="!isViewerJoined && isMultiPlayer">
-                        <h4>Chat</h4>
+                    <div class="card" *ngIf="isMultiPlayer">
+                        <div class="card-body">
+                            <h5 class="card-title">Chat</h5>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Name for Chat" [(ngModel)]="nameForChat" />
+                            </div>
+                            <div class="chat">
+                                <span class="chat-message" *ngFor="let msg of chatMessages;"
+                                    [ngClass]="{'left': msg.isOwnMessage }">
+                                    <span class="chess-icons s16" [ngClass]="msg.player + ' king'" *ngIf="msg.player"></span>
+                                    <span class="viewer-icon" *ngIf="!msg.player">[viewer]</span>
+                                    <span class="name">{{msg.name}}</span>
+                                    <br />
+                                    <span class="msg">{{msg.message}}</span>
+                                </span>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Message" aria-label="Message" 
+                                    aria-describedby="button-send-message" [(ngModel)]="messageForChat" />
+                                <button class="btn btn-outline-secondary" type="button" id="button-send-message"
+                                    (click)="onSendMessageClick()" >
+                                    Send
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

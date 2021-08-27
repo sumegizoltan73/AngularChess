@@ -1,3 +1,4 @@
+import { ChessBase } from "./chess-base.";
 import { Figure } from "./chess-figure";
 
 export class FigureKing extends Figure implements IFigure {
@@ -79,7 +80,7 @@ export class FigureKing extends Figure implements IFigure {
             const stepOffset = Math.abs(step.to!.x - step.from!.x);
             const rookOffset = (step.to!.x > step.from!.x) ? 1 : -1;
             const rookX = step.from!.x + rookOffset;
-            const fig = this.chessBase.getFigure(rookX, step.from!.y);
+            const fig = ChessBase.instance.getFigure(rookX, step.from!.y);
             
             if ((stepOffset === 2) && fig && fig.name === 'rook' && fig.color === this.color) {
                 _retVal = true;
@@ -92,7 +93,7 @@ export class FigureKing extends Figure implements IFigure {
     private isStepNotBlockedByEnemyKnightRange(step: IStep): boolean {
         let _retVal = true;
         const enemyColor = (this.color === 'white') ? 'black' : 'white';
-        const cell = this.chessBase.getKingWithCell(enemyColor);
+        const cell = ChessBase.instance.getKingWithCell(enemyColor);
 
         if (Math.abs(cell.x - step.to!.x) <= 1 && Math.abs(cell.y - step.to!.y) <= 1) {
             _retVal = false;

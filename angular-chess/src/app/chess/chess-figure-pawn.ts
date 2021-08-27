@@ -1,3 +1,4 @@
+import { ChessBase } from "./chess-base.";
 import { Figure } from "./chess-figure";
 
 export class FigurePawn extends Figure implements IFigure {
@@ -50,10 +51,11 @@ export class FigurePawn extends Figure implements IFigure {
 
     private isPunch(step: IStep): boolean {
         let _retVal = false;
-        const fig = this.chessBase.getFigure(step.to!.x, step.to!.y);
+        const base = ChessBase.instance;
+        const fig = base.getFigure(step.to!.x, step.to!.y);
 
         if (fig && fig.color !== this.color) {
-            if (fig.name !== 'king' || this.chessBase.isHitEnemyKingCanBeTested) {
+            if (fig.name !== 'king' || base.isHitEnemyKingCanBeTested) {
                 _retVal = true;
             }
         }
@@ -63,10 +65,11 @@ export class FigurePawn extends Figure implements IFigure {
 
     private isEnPassant(step: IStep): boolean {
         let _retVal = false;
-        const fig = this.chessBase.getFigure(step.to!.x, step.to!.y);
+        const base = ChessBase.instance;
+        const fig = base.getFigure(step.to!.x, step.to!.y);
 
-        if (!fig && this.chessBase.enPassant) {
-            if (this.chessBase.enPassant.to.x === step.to!.x && this.chessBase.enPassant.to.y === step.to!.y) {
+        if (!fig && base.enPassant) {
+            if (base.enPassant.to.x === step.to!.x && base.enPassant.to.y === step.to!.y) {
                 _retVal = true;
             }
         }
@@ -79,11 +82,12 @@ export class FigurePawn extends Figure implements IFigure {
 
         if (this.isTwoCellStepFromOrig(step)) {
             const offsetY = (step.to!.y > step.from!.y) ? 1 : -1;
-            const fig = this.chessBase.getFigure(step.to!.x, step.to!.y + offsetY);
+            const base = ChessBase.instance;
+            const fig = base.getFigure(step.to!.x, step.to!.y + offsetY);
 
             if (fig && fig.color !== this.color) {
-                const figInLeft = (step.to!.x > 0) ? this.chessBase.getFigure(step.to!.x - 1, step.to!.y) : null;
-                const figInRight = (step.to!.x < 7) ? this.chessBase.getFigure(step.to!.x + 1, step.to!.y) : null;
+                const figInLeft = (step.to!.x > 0) ? base.getFigure(step.to!.x - 1, step.to!.y) : null;
+                const figInRight = (step.to!.x < 7) ? base.getFigure(step.to!.x + 1, step.to!.y) : null;
 
                 if ((figInLeft && figInLeft.color !== this.color)
                         || (figInRight && figInRight.color !== this.color)) {
@@ -107,7 +111,7 @@ export class FigurePawn extends Figure implements IFigure {
 
     private isStepNotBlockedByEnemy(step: IStep): boolean {
         let _retVal = true;
-        const fig = this.chessBase.getFigure(step.to!.x, step.to!.y);
+        const fig = ChessBase.instance.getFigure(step.to!.x, step.to!.y);
 
         if (fig && fig.color !== this.color) {
             _retVal = false;

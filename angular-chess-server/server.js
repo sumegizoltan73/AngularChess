@@ -35,10 +35,11 @@ io.on('connection', (socket) => {
         socket.join(roomId);
         rooms[roomId] = { 
             players: { white: socket.id },
-            viewers: [] 
+            viewers: [],
+            isBoardChanged: false
         };
         io.in(roomId).emit('game-created', PIN);
-        socket.emit('id', socket.id);
+        socket.emit('id', socket.id, false);
     });
     socket.on('join', (room, PIN, isViewer) => {
         const roomId = room + '_' + PIN;
@@ -48,13 +49,13 @@ io.on('connection', (socket) => {
                 rooms[roomId].viewers.push(socket.id);
                 const isStarted = ('black' in rooms[roomId].players);
                 io.in(roomId).emit('viewer-joined', isStarted);
-                socket.emit('id', socket.id);
+                socket.emit('id', socket.id, rooms[roomId].isBoardChanged);
             }
             else {
                 if (!('black' in rooms[roomId].players)) {
                     rooms[roomId].players['black'] = socket.id;
                     io.in(roomId).emit('gamer-joined');
-                    socket.emit('id', socket.id);
+                    socket.emit('id', socket.id, rooms[roomId].isBoardChanged);
                 }
                 else {
                     socket.emit('invalid-gamer');
@@ -68,6 +69,7 @@ io.on('connection', (socket) => {
     socket.on('step', (room, PIN, eventArgs) => {
         const roomId = room + '_' + PIN;
         if (roomId in rooms) {
+            rooms[roomId].isBoardChanged = true;
             io.in(roomId).emit('step-to', eventArgs);
         }
     });
@@ -75,6 +77,18 @@ io.on('connection', (socket) => {
         const roomId = room + '_' + PIN;
         if (roomId in rooms) {
             io.in(roomId).emit('pawn-converted', name, color, step);
+        }
+    });
+    socket.on('get-board', (room, PIN, socketId) => {
+        const roomId = room + '_' + PIN;
+        if (roomId in rooms) {
+            io.to(rooms[roomId].players.white).emit('get-board-to', socketId);
+        }
+    });
+    socket.on('board', (room, PIN, socketId, board, steps, colorOfNext, isWhiteResigned, isBlackResigned) => {
+        const roomId = room + '_' + PIN;
+        if (roomId in rooms) {
+            io.to(socketId).emit('board-to', board, steps, colorOfNext, isWhiteResigned, isBlackResigned);
         }
     });
     socket.on('message', (room, PIN, player, name, id, message) => {

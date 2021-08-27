@@ -29,6 +29,8 @@ interface IStepDetail {
     isStrike: boolean;
     isCheck: boolean;
     isCheckMate: boolean;
+    isShowFromX: boolean;
+    isShowFromY: boolean;
     get figure(): string;
     get castling(): string;
     get notation(): string;

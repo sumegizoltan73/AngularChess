@@ -135,12 +135,37 @@ export class ChessComponent implements OnInit, OnDestroy {
 
     this.socket.on('viewer-joined', (isStarted: boolean) => {
       this.isGameStarted = isStarted;
-
-      // if isStarted -> get board from white, get colorOfNext
     });
 
-    this.socket.on('id', (socketId: string) => {
+    this.socket.on('id', (socketId: string, isBoardChanged: boolean) => {
       this.socketId = socketId;
+
+      if (isBoardChanged) {
+        this.socket.emit('get-board', this.roomNameForJoin, this.PINForJoin, this.socketId);
+      }
+    });
+
+    this.socket.on('get-board-to', (socketId: string) => {
+      if (this.colorOfLocalGamer === 'White') {
+        //const board = this.chessBase.board.slice(0, this.chessBase.board.length);
+        //const steps = this.steps.slice(0, this.steps.length);
+        this.socket.emit('board', this.roomNameForCreate, this.PINForJoin, socketId, 
+            this.chessBase.board, this.steps, this.colorOfNext, this.isWhiteResigned, this.isBlackResigned);
+      }
+    });
+
+    this.socket.on('board-to', (board: ICell[], steps: IStepNotation[], colorOfNext: string, isWhiteResigned: boolean, isBlackResigned: boolean) => {
+      this.syncronizeBoard(board);
+      this.syncronizeSteps(steps);
+      this.isWhiteNext = (colorOfNext === 'white');
+
+      if (isWhiteResigned || isBlackResigned) {
+        const color = (isWhiteResigned)? 'white': 'black';
+        this.onResignClick(color);
+      }
+      else {
+        this.chessBase.processCombinatedTests(this.colorOfNext);
+      }
     });
 
     this.socket.on('invalid-room', () => {
@@ -638,6 +663,50 @@ export class ChessComponent implements OnInit, OnDestroy {
     this.step.to = { x: x, y: y};
     const chessBase = ChessBase.instance;
     chessBase.stepAwayIfPossible(this.step);
+  }
+
+  private syncronizeBoard(board: ICell[]): void {
+    this.chessBase.board = [];
+    for (let i = 0; i < board.length; i++) {
+      const element = board[i];
+      if (element.figure?.name) {
+        ChessFactory.createFigure(element.figure.name, element.figure.color, element.x, element.y);
+      }
+    }
+  }
+
+  private syncronizeSteps(steps: IStepNotation[]): void {
+    this.steps = [];
+    for (let i = 0; i < steps.length; i++) {
+      const element = steps[i];
+      const item: IStepNotation = { 
+        white: new StepDetail(
+          element.white.step,
+          element.white.additionalStep,
+          element.white.fig,
+          element.white.isStrike,
+          element.white.isCheck,
+          element.white.isCheckMate,
+          element.white.isShowFromX,
+          element.white.isShowFromY
+          ), 
+        black: null };
+
+      if (element.black) {
+        item.black = new StepDetail(
+          element.black.step,
+          element.black.additionalStep,
+          element.black.fig,
+          element.black.isStrike,
+          element.black.isCheck,
+          element.black.isCheckMate,
+          element.black.isShowFromX,
+          element.black.isShowFromY
+        );
+      }
+      
+      this.steps.push(item);
+    }
   }
 
   private fillBoard(): void {

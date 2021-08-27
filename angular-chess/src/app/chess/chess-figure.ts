@@ -2,12 +2,10 @@ import { ChessBase } from "./chess-base.";
 
 export class Figure {
 
-    protected chessBase: ChessBase;
     protected maxX: number;
     protected maxY: number;
 
     constructor(public name: string, public color: string, maxX: number, maxY: number){
-        this.chessBase = ChessBase.instance;
         this.maxX = maxX;
         this.maxY = maxY;
     }
@@ -35,6 +33,7 @@ export class Figure {
             let y: number = step.from!.y;
             let fig: IFigure | null = null;
             let processNext: boolean = true;
+            const base = ChessBase.instance;
 
             while(_retVal && processNext) {
                 x += increaseX;
@@ -43,7 +42,7 @@ export class Figure {
                     processNext = false;
                 }
                 else {
-                    fig = this.chessBase.getFigure(x, y);
+                    fig = base.getFigure(x, y);
                     if (fig) {
                         processNext = false;
                         _retVal = false;
@@ -65,7 +64,7 @@ export class Figure {
 
     protected isCellToNotBlockedBySameFigure(step: IStep): boolean {
         let _retVal = true;
-        const figTo = this.chessBase.getFigure(step.to!.x, step.to!.y);
+        const figTo = ChessBase.instance.getFigure(step.to!.x, step.to!.y);
 
         if (figTo && figTo.color === this.color){ 
             _retVal = false;
@@ -76,9 +75,10 @@ export class Figure {
 
     protected isCellToNotBlockedByEnemyKing(step: IStep): boolean {
         let _retVal = true;
+        const base = ChessBase.instance;
 
-        if (!(this.chessBase.isHitEnemyKingCanBeTested || this.name === 'pawn')) {
-            const figTo = this.chessBase.getFigure(step.to!.x, step.to!.y);
+        if (!(base.isHitEnemyKingCanBeTested || this.name === 'pawn')) {
+            const figTo = base.getFigure(step.to!.x, step.to!.y);
 
             if (figTo && (figTo.color !== this.color) && (figTo.name === 'king')){ 
                 _retVal = false;

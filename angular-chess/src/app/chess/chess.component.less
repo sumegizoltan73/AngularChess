@@ -1,10 +1,10 @@
 table { border-collapse: collapse; }
-td, th { border: 1px solid lightgray; width: 3rem; height: 3rem; 
+td, th { border: 1px solid lightgray; width: 3em; height: 3em; max-width: 3rem; max-height: 3rem; 
     text-align: center; vertical-align: middle; font-weight: bold; }
 td.white { background-color: #ffaa80; }
 td.black { background-color: #cc4400; }
 
-span.chess-icons { display: block; width: 45px; height: 45px; }
+span.chess-icons { display: block; width: 95%; height: 95%; background-size: contain; background-repeat: no-repeat; }
 
 span.chess-icons.white.rook { background-image: url('../../assets/img/Chess_rlt45.svg'); }
 span.chess-icons.white.knight { background-image: url('../../assets/img/Chess_nlt45.svg'); }
@@ -20,7 +20,7 @@ span.chess-icons.black.queen { background-image: url('../../assets/img/Chess_qdt
 span.chess-icons.black.king { background-image: url('../../assets/img/Chess_kdt45.svg'); }
 span.chess-icons.black.pawn { background-image: url('../../assets/img/Chess_pdt45.svg'); }
 
-div.check-info { color: red; font-weight: bold; font-size: 14px; width: 30rem; text-align: right; }
+div.check-info { color: red; font-weight: bold; font-size: 14px; width: 30rem; max-width: 100%; text-align: right; }
 .btn-resign { margin: 5px; }
 .btn-join { margin-top: 10px; margin-right: 10px; }
 .multiplayer-info { margin: 10px; font-weight: bold; }

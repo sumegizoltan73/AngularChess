@@ -33,10 +33,12 @@ div.check-info { color: red; font-weight: bold; font-size: 14px; width: 30rem; m
 .steps, .chat { height: 20rem; overflow-y: auto; }
 span.chess-icons.s16 { display: inline-block; width: 20px; height: 20px; background-size: contain; }
 
-.chat .chat-message { display: block; float: right; text-align: right; clear: both; }
-.chat .chat-message.left { float: left; text-align: left; }
+.chat .chat-message { display: block; float: right; text-align: right; clear: both; margin-left: 30px; margin-right: 0px; }
+.chat .chat-message.left { float: left; text-align: left; margin-left: 0px; margin-right: 30px; }
 .chat .chat-message .name { margin-left: 10px; font-weight: bold; }
 .chat .chat-message .viewer-icon { font-weight: bold; }
+.chat .chat-message .msg { border: solid 1px gray; background-color: #f2f2f2; border-radius: 5px; }
+.chat .chat-message.left .msg { border: solid 1px darkblue; background-color: #b3c6ff; color: darkblue; }
 
 .loader {
     border: 5px solid #f3f3f3;

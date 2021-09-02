@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { ChessComponent } from './chess/chess.component';
 import { NgxMaskModule, IConfig } from 'ngx-mask'
+import { LocalStorageService } from './chess/localstorage.service';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,7 @@ import { NgxMaskModule, IConfig } from 'ngx-mask'
     FormsModule,
     NgxMaskModule.forRoot()
   ],
-  providers: [],
+  providers: [LocalStorageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

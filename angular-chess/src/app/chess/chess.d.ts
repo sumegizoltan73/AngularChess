@@ -47,3 +47,8 @@ interface IChatMessage {
     message: string;
     isOwnMessage: boolean;
 }
+
+interface IGameListItem {
+    name: string;
+    date: string;
+}

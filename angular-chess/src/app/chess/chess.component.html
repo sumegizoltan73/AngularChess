@@ -151,7 +151,7 @@
 
             <div class="row" *ngIf="isStarted">
                 <div class="col-12 col-md-6">
-                    <div class="card">
+                    <div class="card" *ngIf="!isLoadDetailVisible">
                         <div class="card-body steps">
                             <h5 class="card-title">Step notation</h5>
                             <ol>
@@ -166,6 +166,49 @@
                                     </span>
                                 </li>
                             </ol>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div *ngIf="isSaveAndLoadVisible">
+                                <button class="btn btn-outline-secondary" type="button" id="button-load-game"
+                                    (click)="onLoadGameClick()" style="margin-right: 15px;">
+                                    Load
+                                </button>
+                                <button class="btn btn-outline-secondary" type="button" id="button-save-game"
+                                    (click)="onSaveGameClick()" >
+                                    Save
+                                </button>
+                            </div>
+
+                            <div *ngIf="isSaveDetailVisible">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Name of Game" aria-label="Name" 
+                                        aria-describedby="button-save" [(ngModel)]="nameForSave" />
+                                    <button class="btn btn-outline-secondary" type="button" id="button-save"
+                                        (click)="onSaveClick()" [disabled]="!nameForSave" >
+                                        Save
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div *ngIf="isLoadDetailVisible">
+                                <div class="game-list">
+                                    <div class="list-group">
+                                        <button type="button" class="list-group-item list-group-item-action"
+                                            *ngFor="let item of gameList; let i = index;"
+                                            [ngClass]="{ 'active': i === selectedItemForLoad}"
+                                            (click)="onSelectGameClick(i)">
+                                          {{item.name}} <span class="bold"> - {{item.date}}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-secondary" type="button" id="button-load"
+                                    (click)="onLoadClick()" [disabled]="!isGameSelectedForLoad" >
+                                    Load
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

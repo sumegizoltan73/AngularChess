@@ -15,6 +15,7 @@
 - Step notation
 - Synchronized table and step notation for post-start entrances
 - Chat in Multiplayer mode 
+- Save/Load game (stored in LocalStorage)
 
 ![Angular Chess](/angular-chess/src/assets/chess_5.PNG)
 
@@ -45,8 +46,6 @@ If the player's pawn reaches the opponent's starting line, you can choose to exc
 
 - Multilingualism,
 - Timer, with separate measurements for each color,
-- Save and reload game (including step list)
-- Synchronize reload in case of pairing,
 - Email forwarding,
 - Built-in situational situations for self-test (chess mat, dead position, dead position),
 - Play based on a playlist,
@@ -61,6 +60,7 @@ If the player's pawn reaches the opponent's starting line, you can choose to exc
 - Lépésjegyzék
 - Szinkronizált tábla és lépésjegyzék a kezdés utáni belépőknél
 - Chat a többjátékos módban
+- Játék mentése/visszatöktése (LocalStorage alapú tárolás)
 
 ![Angular Chess](/angular-chess/src/assets/chess_5.PNG)
 
@@ -89,8 +89,6 @@ Ha a játékos gyalogja beér az elenfél kiinduló sorába, akkor a korábban e
 
 - Többnyelvűsítés,
 - Időmérő, színenként külön méréssel,
-- Játék mentése és visszatöltése (lépéslista is),
-- Visszatöltés szinkronizálása párosítás esetén,
 - Mentés továbbítása email-en,
 - Beépített szituációs helyzetek önteszt-hez (sakk matt, patt helyzet, dead position),
 - Lépéslista alapján visszajátszás,

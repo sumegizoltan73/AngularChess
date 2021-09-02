@@ -4,6 +4,7 @@ import { ChessFactory } from './chess.factory';
 import './chess.helpers';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import { LocalStorageService } from './localstorage.service';
 
 export class StepDetail implements IStepDetail {
   
@@ -84,9 +85,11 @@ export class ChessComponent implements OnInit, OnDestroy {
   PINForJoin: string = '';
   nameForChat: string = '';
   messageForChat: string = '';
+  nameForSave: string = '';
   socket;
   steps: IStepNotation[] = [];
   chatMessages: IChatMessage[] = [];
+  gameList: IGameListItem[] = [];
 
   private chessBase: ChessBase;
   private isWhiteNext: boolean = true;
@@ -101,8 +104,12 @@ export class ChessComponent implements OnInit, OnDestroy {
   private isJoinedAsViewer: boolean = false;
   private localGamers: string[] = ['white', 'black'];
   private socketId: string = '';
+  private isSaveGameEnabled: boolean = false;
+  private isLoadGameEnabled: boolean = false;
+  private isLocaleLoaded: boolean = false;
+  private gameListSelectedItem: number = -1;
 
-  constructor() { 
+  constructor(private _localStorage: LocalStorageService) { 
     this.chessBase = ChessBase.instance;
     
     this.chessBase.events.subscribe('stepFinished', (eventArgs: any) => { this.onStep(eventArgs); });
@@ -147,25 +154,20 @@ export class ChessComponent implements OnInit, OnDestroy {
 
     this.socket.on('get-board-to', (socketId: string) => {
       if (this.colorOfLocalGamer === 'White') {
-        //const board = this.chessBase.board.slice(0, this.chessBase.board.length);
-        //const steps = this.steps.slice(0, this.steps.length);
         this.socket.emit('board', this.roomNameForCreate, this.PINForJoin, socketId, 
             this.chessBase.board, this.steps, this.colorOfNext, this.isWhiteResigned, this.isBlackResigned);
       }
     });
 
     this.socket.on('board-to', (board: ICell[], steps: IStepNotation[], colorOfNext: string, isWhiteResigned: boolean, isBlackResigned: boolean) => {
-      this.syncronizeBoard(board);
-      this.syncronizeSteps(steps);
-      this.isWhiteNext = (colorOfNext === 'white');
+      this.onSyncronize(board, steps, colorOfNext, isWhiteResigned, isBlackResigned);
+    });
 
-      if (isWhiteResigned || isBlackResigned) {
-        const color = (isWhiteResigned)? 'white': 'black';
-        this.onResignClick(color);
+    this.socket.on('board-to-all', (board: ICell[], steps: IStepNotation[], colorOfNext: string, isWhiteResigned: boolean, isBlackResigned: boolean) => {
+      if (!this.isLocaleLoaded) {
+        this.onSyncronize(board, steps, colorOfNext, isWhiteResigned, isBlackResigned);
       }
-      else {
-        this.chessBase.processCombinatedTests(this.colorOfNext);
-      }
+      this.isLocaleLoaded = false;
     });
 
     this.socket.on('invalid-room', () => {
@@ -397,6 +399,26 @@ export class ChessComponent implements OnInit, OnDestroy {
     return this.chessBase.whitePromotionList;
   }
 
+  get isSaveDetailVisible(): boolean {
+    return this.isSaveGameEnabled;
+  }
+
+  get isLoadDetailVisible(): boolean {
+    return this.isLoadGameEnabled;
+  }
+
+  get isSaveAndLoadVisible(): boolean {
+    return !(this.isSaveDetailVisible || this.isLoadDetailVisible);
+  }
+
+  get isGameSelectedForLoad(): boolean {
+    return this.gameListSelectedItem > -1;
+  }
+
+  get selectedItemForLoad(): number {
+    return this.gameListSelectedItem;
+  }
+
   ngOnInit(): void {
   }
   
@@ -434,7 +456,6 @@ export class ChessComponent implements OnInit, OnDestroy {
       this.socket.emit('convert-pawn', roomName, this.PINForJoin, name, color, this.step);
     }
     
-    console.log('onPromotionClick');
     this.chessBase.convertPawn(name, color, this.step, i);
   }
 
@@ -476,6 +497,53 @@ export class ChessComponent implements OnInit, OnDestroy {
     this.messageForChat = '';
   }
 
+  onSaveGameClick(): void {
+    this.nameForSave = '';
+    this.isSaveGameEnabled = true;
+  }
+
+  onLoadGameClick(): void {
+    this.gameList = this._localStorage.getList();
+    this.gameListSelectedItem = -1;
+    this.isLoadGameEnabled = true;
+  }
+
+  onSaveClick(): void {
+    // save
+    const data = { 
+      board: this.chessBase.board, 
+      steps: this.steps, 
+      next: this.colorOfNext, 
+      isWhiteResigned: this.isWhiteResigned, 
+      isBlackResigned: this.isBlackResigned,
+      date: new Date().toJSON().slice(0,16).replace('T', ' ')
+    };
+    this._localStorage.setItem(this.nameForSave, data);
+    this.isSaveGameEnabled = false;
+  }
+
+  onLoadClick(): void {
+    const name = this.gameList[this.gameListSelectedItem].name;
+    const data = this._localStorage.loadItem(name);
+
+    if (data) {
+      this.onSyncronize(data.board, data.steps, data.next, data.isWhiteResigned, data.isBlackResigned);
+
+      if (this.isMultiPlayer) {
+        this.isLocaleLoaded = true;
+        const roomName: string = (this.roomNameForCreate) ? this.roomNameForCreate : this.roomNameForJoin;
+        this.socket.emit('board-loaded', roomName, this.PINForJoin, 
+              this.chessBase.board, this.steps, this.colorOfNext, this.isWhiteResigned, this.isBlackResigned);
+      }
+    }
+
+    this.isLoadGameEnabled = false;
+  }
+
+  onSelectGameClick(i: number): void {
+    this.gameListSelectedItem = i;
+  }
+
   gameModeChange(e: Event): void {
     this.isSinglePlayerGame = ((<HTMLInputElement> e.target).id === 'singlePlayer');
   }
@@ -514,7 +582,6 @@ export class ChessComponent implements OnInit, OnDestroy {
       this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next. Convert the pawn to another!';
     }
     else {
-      console.log('onStep() - else');
       this.step = { from: null, to: null };
       this.isClickedFrom = !this.isClickedFrom;
       this.isWhiteNext = !this.isWhiteNext;
@@ -623,8 +690,22 @@ export class ChessComponent implements OnInit, OnDestroy {
     return _retVal;
   }
 
+  private onSyncronize(board: ICell[], steps: IStepNotation[], colorOfNext: string, isWhiteResigned: boolean, isBlackResigned: boolean): void {
+    this.syncronizeBoard(board);
+    this.syncronizeSteps(steps);
+    this.isWhiteNext = (colorOfNext === 'white');
+
+    if (isWhiteResigned || isBlackResigned) {
+      const color = (isWhiteResigned)? 'white': 'black';
+      this.onResignClick(color);
+    }
+    else {
+      this.chessBase.processCombinatedTests(this.colorOfNext);
+      this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
+    }
+  }
+
   private onPromotion(): void {
-    console.log('onPromotion');
     this.onStep(null);
   }
 
@@ -654,7 +735,6 @@ export class ChessComponent implements OnInit, OnDestroy {
       this.msg = this.colorOfNext.toUpperCaseFirstLetter() + ': Click the next cell!';
     }
     else {
-      console.log(fig?.color, this.colorOfNext);
       this.msg = 'This step is illegal! ' + this.colorOfNext.toUpperCaseFirstLetter() + ' is next.';
     }
   }

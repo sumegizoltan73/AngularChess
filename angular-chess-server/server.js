@@ -91,6 +91,12 @@ io.on('connection', (socket) => {
             io.to(socketId).emit('board-to', board, steps, colorOfNext, isWhiteResigned, isBlackResigned);
         }
     });
+    socket.on('board-loaded', (room, PIN, board, steps, colorOfNext, isWhiteResigned, isBlackResigned) => {
+        const roomId = room + '_' + PIN;
+        if (roomId in rooms) {
+            io.in(roomId).emit('board-to-all', board, steps, colorOfNext, isWhiteResigned, isBlackResigned);
+        }
+    });
     socket.on('message', (room, PIN, player, name, id, message) => {
         const roomId = room + '_' + PIN;
         if (roomId in rooms) {

@@ -62,7 +62,7 @@ If the player's pawn reaches the opponent's starting line, you can choose to exc
 - Lépésjegyzék
 - Szinkronizált tábla és lépésjegyzék a kezdés utáni belépőknél
 - Chat a többjátékos módban
-- Játék mentése/visszatöktése (LocalStorage alapú tárolás)
+- Játék mentése/visszatöltése (LocalStorage alapú tárolás)
 
 ![Angular Chess](/angular-chess/src/assets/chess_5.PNG)
 

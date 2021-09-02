@@ -21,6 +21,8 @@
 
 ![Angular Chess - chat](/angular-chess/src/assets/chess_6.PNG)
 
+![Angular Chess - load](/angular-chess/src/assets/chess_7.PNG)
+
 ### Behavior
 
 Chess pieces are placed on the board as an object through an initialization procedure.
@@ -63,6 +65,10 @@ If the player's pawn reaches the opponent's starting line, you can choose to exc
 - Játék mentése/visszatöktése (LocalStorage alapú tárolás)
 
 ![Angular Chess](/angular-chess/src/assets/chess_5.PNG)
+
+![Angular Chess - chat](/angular-chess/src/assets/chess_6.PNG)
+
+![Angular Chess - load](/angular-chess/src/assets/chess_7.PNG)
 
 ### Működés
 

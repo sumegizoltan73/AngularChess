@@ -9,7 +9,7 @@
     "test": "ng test",
     "updatets": "ng update typescript@5.5 --force",
     "updatecore": "ng update @angular/core@13 --force",
-    "update": "ng update @angular/core@18 @angular/cli@18"
+    "update": "ng update @angular/core@18 @angular/cli@18 --force"
   },
   "private": true,
   "dependencies": {

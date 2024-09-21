@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "updatets": "ng update typescript@5.5",
+    "updatets": "ng update @angular/compiler-cli@4.3 typescript@5.5",
     "updatecore": "ng update @angular/core@13",
     "update": "ng update @angular/core@18 @angular/cli@18"
   },

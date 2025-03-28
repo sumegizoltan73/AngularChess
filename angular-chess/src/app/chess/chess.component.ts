@@ -70,9 +70,10 @@ export class StepDetail implements IStepDetail {
 } 
 
 @Component({
-  selector: 'app-chess',
-  templateUrl: './chess.component.html',
-  styleUrls: ['./chess.component.less']
+    selector: 'app-chess',
+    templateUrl: './chess.component.html',
+    styleUrls: ['./chess.component.less'],
+    standalone: false
 })
 export class ChessComponent implements OnInit, OnDestroy {
 

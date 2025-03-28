@@ -161,8 +161,8 @@
                                         {{step.white.notation}}
                                     </span>
                                     <span style="margin-left: 20px;" *ngIf="step.black">
-                                        <span class="chess-icons s16" [ngClass]="'black ' + step.black?.figure" *ngIf="step.black?.figure"></span>
-                                        {{step.black?.notation}}
+                                        <span class="chess-icons s16" [ngClass]="'black ' + step.black.figure" *ngIf="step.black?.figure"></span>
+                                        {{step.black.notation || ""}}
                                     </span>
                                 </li>
                             </ol>

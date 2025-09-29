@@ -176,13 +176,19 @@ export class ChessBase {
         // is castling?
         if (figFrom?.name == 'king' && step.from!.y === step.to!.y 
                 && ((step.from!.y === 0 && figFrom.color === 'black') || (step.from!.y === 7  && figFrom.color === 'white'))) {
-            const xOfKing = (step.from!.x < step.to!.x) ? step.to!.x + 2 : step.to!.x - 2;
             const xOfRook = (step.from!.x < step.to!.x) ? step.from!.x + 3 : step.from!.x - 4;
-            const figToMaybeRook = this.getFigure(xOfKing, step.to!.y);
-            console.log(xOfKing, xOfRook, figToMaybeRook);
+            const figToMaybeRook = this.getFigure(xOfRook, step.to!.y);
+            console.log(xOfRook, figToMaybeRook);
             if (figToMaybeRook && figToMaybeRook.name === 'rook') {
                 if ((<FigureRook> figToMaybeRook).isOrigPosition({ from: { x: xOfRook, y: step.from!.y }, to: null })) {
                     const xOfRookTo = (step.from!.x < step.to!.x) ? step.to!.x - 1 : step.to!.x + 1;
+                    console.log({ 
+                        state: 'castling', 
+                        additionalStep: { 
+                            from: { x: xOfRook, y: step.from!.y }, 
+                            to: { x: xOfRookTo, y: step.from!.y }
+                        } 
+                    });
                     _retVal = { 
                         state: 'castling', 
                         additionalStep: { 
@@ -190,6 +196,9 @@ export class ChessBase {
                             to: { x: xOfRookTo, y: step.from!.y }
                         } 
                     };
+                }
+                else {
+                    console.log("Not orig position");
                 }
             }
         }

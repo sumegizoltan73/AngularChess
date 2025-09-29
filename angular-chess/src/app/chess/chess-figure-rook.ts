@@ -22,10 +22,13 @@ export class FigureRook extends Figure implements IFigure {
     }
 
     isOrigPosition(step: IStep): boolean {
-        console.log(!this.isMoved && ((this.color === 'white' && step.from!.y === 7 && step.from!.x === 0) 
-                || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 7)));
-        return !this.isMoved && ((this.color === 'white' && step.from!.y === 7 && step.from!.x === 0) 
-                || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 7));
+        console.log(this, step);
+        return !this.isMoved && (
+                (this.color === 'white' && step.from!.y === 7 && step.from!.x === 7)
+                || (this.color === 'white' && step.from!.y === 7 && step.from!.x === 0) 
+                || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 0) 
+                || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 7)
+        );
     }
 
 }

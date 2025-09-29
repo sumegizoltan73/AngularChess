@@ -5,6 +5,7 @@ const cors = require('cors');
 let originUrl = "http://angular-chess.azurewebsites.net";
 if (process.env.NODE_ENV === "development") {
     originUrl = "http://localhost:4200";
+    console.log("Run as development in localhost.");
 }
 
 const http = require('http').Server(app);

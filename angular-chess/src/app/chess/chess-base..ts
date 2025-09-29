@@ -1,5 +1,6 @@
 import { FigureKing } from './chess-figure-king';
 import { FigurePawn } from './chess-figure-pawn';
+import { FigureRook } from './chess-figure-rook';
 import { ChessEvents } from './chess.events'
 import { ChessFactory } from './chess.factory';
 
@@ -173,18 +174,20 @@ export class ChessBase {
         const figFrom = this.getFigure(step.from!.x, step.from!.y);
         
         // is castling?
-        if (figFrom?.name == 'rook' && step.from!.y === step.to!.y 
+        if (figFrom?.name == 'king' && step.from!.y === step.to!.y 
                 && ((step.from!.y === 0 && figFrom.color === 'black') || (step.from!.y === 7  && figFrom.color === 'white'))) {
-            const xOfKing = (step.from!.x < step.to!.x) ? step.to!.x + 1 : step.to!.x - 1;
-            const figToMaybeKing = this.getFigure(xOfKing, step.to!.y);
-            if (figToMaybeKing && figToMaybeKing.name === 'king') {
-                if ((<FigureKing> figToMaybeKing).isOrigPosition({ from: { x: xOfKing, y: step.from!.y }, to: null })) {
-                    const xOfKingTo = (step.from!.x < step.to!.x) ? step.to!.x - 1 : step.to!.x + 1;
+            const xOfKing = (step.from!.x < step.to!.x) ? step.to!.x + 2 : step.to!.x - 2;
+            const xOfRook = (step.from!.x < step.to!.x) ? step.from!.x + 3 : step.from!.x - 4;
+            const figToMaybeRook = this.getFigure(xOfKing, step.to!.y);
+            console.log(xOfKing, xOfRook, figToMaybeRook);
+            if (figToMaybeRook && figToMaybeRook.name === 'rook') {
+                if ((<FigureRook> figToMaybeRook).isOrigPosition({ from: { x: xOfRook, y: step.from!.y }, to: null })) {
+                    const xOfRookTo = (step.from!.x < step.to!.x) ? step.to!.x - 1 : step.to!.x + 1;
                     _retVal = { 
                         state: 'castling', 
                         additionalStep: { 
-                            from: { x: xOfKing, y: step.from!.y }, 
-                            to: { x: xOfKingTo, y: step.from!.y }
+                            from: { x: xOfRook, y: step.from!.y }, 
+                            to: { x: xOfRookTo, y: step.from!.y }
                         } 
                     };
                 }
@@ -627,6 +630,9 @@ export class ChessBase {
         
         if (fig?.name === 'king') {
             (<FigureKing> fig).isMoved = true;
+        }
+        if (fig?.name === 'rook') {
+            (<FigureRook> fig).isMoved = true;
         }
 
         this.board.push({

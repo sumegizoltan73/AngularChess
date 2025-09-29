@@ -1,7 +1,8 @@
 import { Figure } from "./chess-figure";
 
 export class FigureRook extends Figure implements IFigure {
-    
+    isMoved: boolean = false;
+
     constructor(color: string){
         super('rook', color, 8, 8);
     }
@@ -18,6 +19,13 @@ export class FigureRook extends Figure implements IFigure {
         }
 
         return _retVal;
+    }
+
+    isOrigPosition(step: IStep): boolean {
+        console.log(!this.isMoved && ((this.color === 'white' && step.from!.y === 7 && step.from!.x === 0) 
+                || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 7)));
+        return !this.isMoved && ((this.color === 'white' && step.from!.y === 7 && step.from!.x === 0) 
+                || (this.color === 'black' && step.from!.y === 0 && step.from!.x === 7));
     }
 
 }

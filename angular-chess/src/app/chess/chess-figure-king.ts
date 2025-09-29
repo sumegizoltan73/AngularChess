@@ -24,6 +24,9 @@ export class FigureKing extends Figure implements IFigure {
                     }
                 }
             }
+            else {
+                console.log("Distance not possible");
+            }
         }
 
         return _retVal;
@@ -78,11 +81,16 @@ export class FigureKing extends Figure implements IFigure {
 
         if (this.isOrigPosition(step)) {
             const stepOffset = Math.abs(step.to!.x - step.from!.x);
-            const rookOffset = (step.to!.x > step.from!.x) ? 1 : -1;
+            const rookOffset = (step.to!.x > step.from!.x) ? 3 : -4;
             const rookX = step.from!.x + rookOffset;
             const fig = ChessBase.instance.getFigure(rookX, step.from!.y);
-            
-            if ((stepOffset === 2) && fig && fig.name === 'rook' && fig.color === this.color) {
+            let isAllCellEmpty = true;
+            if (rookOffset < 0) {
+                const figEmpty = ChessBase.instance.getFigure(rookX + 1, step.from!.y);
+                isAllCellEmpty = !figEmpty;
+            }
+
+            if (isAllCellEmpty && (stepOffset === 2) && fig && fig.name === 'rook' && fig.color === this.color) {
                 _retVal = true;
             }
         } 

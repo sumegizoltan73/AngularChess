@@ -181,10 +181,10 @@ export class ChessBase {
         
         // is castling?
         if (figFrom?.name == 'king' && step.from!.y === step.to!.y 
-                && ((step.from!.y === 0 && figFrom.color === 'black') || (step.from!.y === 7  && figFrom.color === 'white'))) {
+                && ((step.from!.y === 0 && figFrom.color === 'black') || (step.from!.y === 7  && figFrom.color === 'white'))
+                && ((step.to!.x - step.from!.x) === 2)) {
             const xOfRook = (step.from!.x < step.to!.x) ? step.from!.x + 3 : step.from!.x - 4;
             const figToMaybeRook = this.getFigure(xOfRook, step.to!.y);
-            console.log(xOfRook, figToMaybeRook);
             if (figToMaybeRook && figToMaybeRook.name === 'rook') {
                 if ((<FigureRook> figToMaybeRook).isOrigPosition({ from: { x: xOfRook, y: step.from!.y }, to: null })) {
                     const xOfRookTo = (step.from!.x < step.to!.x) ? step.to!.x - 1 : step.to!.x + 1;
@@ -197,7 +197,6 @@ export class ChessBase {
                     };
                 }
                 else {
-                    console.log("Not orig position");
                     _retVal = { 
                         state: 'castling-revert', 
                         additionalStep: { 

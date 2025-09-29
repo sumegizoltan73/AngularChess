@@ -120,6 +120,12 @@ export class ChessBase {
                 // castling is not possible in chess
                 this.step(arg.additionalStep);
             }
+            else if (arg && arg.state === 'castling-revert') {
+                this.step(arg.additionalStep); 
+                this.isLoaderVisible = false;
+                this.events.emit('stepIllegal', null);
+                return;   
+            }
             else if (arg && arg.state === 'en_passant_position') {
                 this.enPassant = arg.enPassant;
             }
@@ -182,13 +188,6 @@ export class ChessBase {
             if (figToMaybeRook && figToMaybeRook.name === 'rook') {
                 if ((<FigureRook> figToMaybeRook).isOrigPosition({ from: { x: xOfRook, y: step.from!.y }, to: null })) {
                     const xOfRookTo = (step.from!.x < step.to!.x) ? step.to!.x - 1 : step.to!.x + 1;
-                    console.log({ 
-                        state: 'castling', 
-                        additionalStep: { 
-                            from: { x: xOfRook, y: step.from!.y }, 
-                            to: { x: xOfRookTo, y: step.from!.y }
-                        } 
-                    });
                     _retVal = { 
                         state: 'castling', 
                         additionalStep: { 
@@ -199,6 +198,13 @@ export class ChessBase {
                 }
                 else {
                     console.log("Not orig position");
+                    _retVal = { 
+                        state: 'castling-revert', 
+                        additionalStep: { 
+                            from: { x: step.to!.x, y: step.to!.y }, 
+                            to: { x: step.from!.x, y: step.from!.y }
+                        } 
+                    };
                 }
             }
         }

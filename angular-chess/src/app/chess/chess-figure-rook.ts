@@ -22,7 +22,6 @@ export class FigureRook extends Figure implements IFigure {
     }
 
     isOrigPosition(step: IStep): boolean {
-        console.log(this, step);
         return !this.isMoved && (
                 (this.color === 'white' && step.from!.y === 7 && step.from!.x === 7)
                 || (this.color === 'white' && step.from!.y === 7 && step.from!.x === 0) 

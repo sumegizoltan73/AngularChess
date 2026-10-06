@@ -3,8 +3,8 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
-  SOCKET_ENDPOINT: 'http://localhost:8080'
+  production: true,
+  SOCKET_ENDPOINT: 'http://angular-chess.azurewebsites.net'
 };
 
 /*

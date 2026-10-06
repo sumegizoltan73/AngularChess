@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { ChessBase } from './chess-base.';
 import { ChessFactory } from './chess.factory';
 import './chess.helpers';
 import { io } from 'socket.io-client';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../environments/environment';
 import { LocalStorageService } from './localstorage.service';
 
 export class StepDetail implements IStepDetail {
@@ -73,6 +73,7 @@ export class StepDetail implements IStepDetail {
     selector: 'app-chess',
     templateUrl: './chess.component.html',
     styleUrls: ['./chess.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ChessComponent implements OnInit, OnDestroy {

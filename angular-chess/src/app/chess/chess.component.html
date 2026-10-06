@@ -1,246 +1,314 @@
 <div class="container">
-    <div class="row">
-        <div class="col-12 col-xl-6 board-div">
-            <div class="check-info">
-                &nbsp;
-                <span *ngIf="isExistsInfoToBlack">{{ infoToBlack }}</span>
-                <button type="button" class="btn btn-primary btn-sm btn-resign" 
-                    (click)="onResignClick('black')" [disabled]="isGameEnded || isBlackResignDisabled">
-                    Resign
-                </button>
-            </div>
+  <div class="row">
+    <div class="col-12 col-xl-6 board-div">
+      <div class="check-info">
+        &nbsp;
+        @if (isExistsInfoToBlack) {
+          <span>{{ infoToBlack }}</span>
+        }
+        <button type="button" class="btn btn-primary btn-sm btn-resign"
+          (click)="onResignClick('black')" [disabled]="isGameEnded || isBlackResignDisabled">
+          Resign
+        </button>
+      </div>
 
-            <div class="promotion-list" *ngIf="isPromoteWhite">
-                <span class="chess-icons" *ngFor="let name of whitePromotionList; let i=index;" 
-                    [ngClass]="classNameOfPromotion(name, 'white')"
-                    (click)="onPromotionClick(name, i)"></span>
-            </div>
-
-            <table>
-                <tr>
-                    <th></th>
-                    <th *ngFor="let col of x">
-                        {{ col }}
-                    </th>
-                    <th>
-                        <div class="loader" *ngIf="isLoaderVisible"></div>
-                    </th>
-                </tr>
-                <tr *ngFor="let row of y; let i = index;">
-                    <td>{{ row }}</td>
-                    <td *ngFor="let td of x; let j = index;" 
-                            [ngClass]="{'white': isCellWhite(j, i), 'black': !isCellWhite(j, i) }"
-                            (click)="onCellClick(j, i)">
-                        <span class="chess-icons" [ngClass]="classNameOfFigure(j, i)"></span>
-                    </td>
-                    <td>{{ row }}</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td *ngFor="let col of x">
-                        {{ col }}
-                    </td>
-                    <td></td>
-                </tr>
-            </table>
-
-            <div class="promotion-list promotion-black" *ngIf="isPromoteBlack">
-                <span class="chess-icons" *ngFor="let name of blackPromotionList; let i=index;" 
-                    [ngClass]="classNameOfPromotion(name, 'black')"
-                    (click)="onPromotionClick(name, i)"></span>
-            </div>
-
-            <div class="check-info">
-                &nbsp;
-                <span *ngIf="isExistsInfoToWhite">{{ infoToWhite }}</span>
-                <button type="button" class="btn btn-primary btn-sm btn-resign" 
-                    (click)="onResignClick('white')" [disabled]="isGameEnded || isWhiteResignDisabled">
-                    Resign
-                </button>
-            </div>
-
-            <p>{{ msg}}</p>
+      @if (isPromoteWhite) {
+        <div class="promotion-list">
+          @for (name of whitePromotionList; track name; let i = $index) {
+            <span class="chess-icons"
+              [ngClass]="classNameOfPromotion(name, 'white')"
+            (click)="onPromotionClick(name, i)"></span>
+          }
         </div>
+      }
 
-        <div class="col-12 col-md-6">
-            <div class="row">
-                <div class="col">
-                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                        <input type="radio" class="btn-check" name="btnradio" id="singlePlayer" autocomplete="off" checked 
-                            (change)="gameModeChange($event)" [disabled]="isStarted || isPlayerModeSelectionDisabled">
-                        <label class="btn btn-outline-primary" for="singlePlayer">Single player</label>
-                      
-                        <input type="radio" class="btn-check" name="btnradio" id="multiPlayer" autocomplete="off" 
-                            (change)="gameModeChange($event)" [disabled]="isStarted || isPlayerModeSelectionDisabled">
-                        <label class="btn btn-outline-primary" for="multiPlayer">Multi player</label>
-                    </div>
+      <table>
+        <tr>
+          <th></th>
+          @for (col of x; track col) {
+            <th>
+              {{ col }}
+            </th>
+          }
+          <th>
+            @if (isLoaderVisible) {
+              <div class="loader"></div>
+            }
+          </th>
+        </tr>
+        @for (row of y; track row; let i = $index) {
+          <tr>
+            <td>{{ row }}</td>
+            @for (td of x; track td; let j = $index) {
+              <td
+                [ngClass]="{'white': isCellWhite(j, i), 'black': !isCellWhite(j, i) }"
+                (click)="onCellClick(j, i)">
+                <span class="chess-icons" [ngClass]="classNameOfFigure(j, i)"></span>
+              </td>
+            }
+            <td>{{ row }}</td>
+          </tr>
+        }
+        <tr>
+          <td></td>
+          @for (col of x; track col) {
+            <td>
+              {{ col }}
+            </td>
+          }
+          <td></td>
+        </tr>
+      </table>
 
-                    <div class="gamer-info">
-                        <span *ngIf="isStarted && isSinglePlayer">White, Black</span>
-                        <span>{{ colorOfLocalGamer }}</span>
-                        <span *ngIf="isViewerJoined">Viewer</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row" *ngIf="isMultiPlayer">
-                <div class="col">
-                    <div class="card" *ngIf="!isMultiplayerCreateOptionsDisabled">
-                        <div class="card-body">
-                            <div class="input-group" *ngIf="!isRoomCreated">
-                                <input type="text" class="form-control" placeholder="Name of Room" aria-label="Room" 
-                                    aria-describedby="button-create" [(ngModel)]="roomNameForCreate" />
-                                <button class="btn btn-outline-secondary" type="button" id="button-create"
-                                    (click)="onCreateGameClick()" >
-                                    Create Game
-                                </button>
-                            </div>   
-                            <span>
-                                Local gamer: <b>white</b>, 
-                                Remote gamer: <b>black</b> 
-                                - 
-                                <span style="color: red;" *ngIf="!isBlackGamerJoined">offline</span>
-                                <span style="color: green;" *ngIf="isBlackGamerJoined">online</span>
-                            </span>
-                            <br />
-                            <span class="multiplayer-info" *ngIf="isRoomCreated">
-                                Room: {{ roomNameForCreate }}, PIN: {{ PINForJoin }}
-                            </span>                         
-                        </div>
-                    </div>
-
-                    <div class="card" *ngIf="!isMultiplayerJoinOptionsDisabled">
-                        <div class="card-body">
-                            <div *ngIf="!(isStarted || isJoinDisabled)">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Name of Room" [(ngModel)]="roomNameForJoin" />
-                                    <input type="text" class="form-control" placeholder="PIN for Room" [(ngModel)]="PINForJoin" mask="0000" />
-                                </div>
-                                <button class="btn btn-outline-secondary btn-join" type="button" id="button-join-gamer"
-                                    (click)="onJoinAsGamerClick()" >
-                                    Join as Gamer
-                                </button>
-                                <button class="btn btn-outline-secondary btn-join" type="button" id="button-join-viewer"
-                                    (click)="onJoinAsViewerClick()" >
-                                    Join as Viewer
-                                </button>
-                            </div>
-
-                            <div *ngIf="isStarted || isViewerJoined">
-                                <span>
-                                    Local gamer: <b>{{ isViewerJoined ? '-': 'black' }}</b>, 
-                                    Remote gamer: <b>{{ isViewerJoined ? 'white, black': 'white' }}</b> 
-                                </span>
-                                <br />
-                                <span *ngIf="!isStarted && isViewerJoined" style="color: red;">
-                                    We are waiting for the black player to join...
-                                </span>
-                                <br />
-                                <span class="multiplayer-info">
-                                    Room: {{ roomNameForJoin }}, PIN: {{ PINForJoin }}
-                                </span>
-                            </div>
-
-                            <span *ngIf="joinMsg" style="color: red;">
-                                {{ joinMsg }}
-                            </span>
-                        </div>
-                      </div>
-                </div>
-            </div>
-
-            <div class="row" *ngIf="isStarted">
-                <div class="col-12 col-md-6">
-                    <div class="card" *ngIf="!isLoadDetailVisible">
-                        <div class="card-body steps">
-                            <h5 class="card-title">Step notation</h5>
-                            <ol>
-                                <li *ngFor="let step of steps; let j = index;">
-                                    <span>
-                                        <span class="chess-icons s16" [ngClass]="'white ' + step.white.figure" *ngIf="step.white.figure"></span>
-                                        {{step.white.notation}}
-                                    </span>
-                                    <span style="margin-left: 20px;" *ngIf="step.black">
-                                        <span class="chess-icons s16" [ngClass]="'black ' + step.black.figure" *ngIf="step.black?.figure"></span>
-                                        {{step.black.notation || ""}}
-                                    </span>
-                                </li>
-                            </ol>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-body">
-                            <div *ngIf="isSaveAndLoadVisible">
-                                <button class="btn btn-outline-secondary" type="button" id="button-load-game"
-                                    (click)="onLoadGameClick()" style="margin-right: 15px;">
-                                    Load
-                                </button>
-                                <button class="btn btn-outline-secondary" type="button" id="button-save-game"
-                                    (click)="onSaveGameClick()" >
-                                    Save
-                                </button>
-                            </div>
-
-                            <div *ngIf="isSaveDetailVisible">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Name of Game" aria-label="Name" 
-                                        aria-describedby="button-save" [(ngModel)]="nameForSave" />
-                                    <button class="btn btn-outline-secondary" type="button" id="button-save"
-                                        (click)="onSaveClick()" [disabled]="!nameForSave" >
-                                        Save
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div *ngIf="isLoadDetailVisible">
-                                <div class="game-list">
-                                    <div class="list-group">
-                                        <button type="button" class="list-group-item list-group-item-action"
-                                            *ngFor="let item of gameList; let i = index;"
-                                            [ngClass]="{ 'active': i === selectedItemForLoad}"
-                                            (click)="onSelectGameClick(i)">
-                                          {{item.name}} <span class="bold"> - {{item.date}}</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <button class="btn btn-outline-secondary" type="button" id="button-load"
-                                    (click)="onLoadClick()" [disabled]="!isGameSelectedForLoad" >
-                                    Load
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6">
-                    <div class="card" *ngIf="isMultiPlayer">
-                        <div class="card-body">
-                            <h5 class="card-title">Chat</h5>
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Name for Chat" [(ngModel)]="nameForChat" />
-                            </div>
-                            <div class="chat">
-                                <span class="chat-message" *ngFor="let msg of chatMessages;"
-                                    [ngClass]="{'left': msg.isOwnMessage }">
-                                    <span class="chess-icons s16" [ngClass]="msg.player + ' king'" *ngIf="msg.player"></span>
-                                    <span class="viewer-icon" *ngIf="!msg.player">[viewer]</span>
-                                    <span class="name">{{msg.name}}</span>
-                                    <div class="msg">{{msg.message}}</div>
-                                </span>
-                            </div>
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Message" aria-label="Message" 
-                                    aria-describedby="button-send-message" [(ngModel)]="messageForChat" />
-                                <button class="btn btn-outline-secondary" type="button" id="button-send-message"
-                                    (click)="onSendMessageClick()" >
-                                    Send
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      @if (isPromoteBlack) {
+        <div class="promotion-list promotion-black">
+          @for (name of blackPromotionList; track name; let i = $index) {
+            <span class="chess-icons"
+              [ngClass]="classNameOfPromotion(name, 'black')"
+            (click)="onPromotionClick(name, i)"></span>
+          }
         </div>
+      }
+
+      <div class="check-info">
+        &nbsp;
+        @if (isExistsInfoToWhite) {
+          <span>{{ infoToWhite }}</span>
+        }
+        <button type="button" class="btn btn-primary btn-sm btn-resign"
+          (click)="onResignClick('white')" [disabled]="isGameEnded || isWhiteResignDisabled">
+          Resign
+        </button>
+      </div>
+
+      <p>{{ msg}}</p>
     </div>
+
+    <div class="col-12 col-md-6">
+      <div class="row">
+        <div class="col">
+          <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" name="btnradio" id="singlePlayer" autocomplete="off" checked
+              (change)="gameModeChange($event)" [disabled]="isStarted || isPlayerModeSelectionDisabled">
+            <label class="btn btn-outline-primary" for="singlePlayer">Single player</label>
+
+            <input type="radio" class="btn-check" name="btnradio" id="multiPlayer" autocomplete="off"
+              (change)="gameModeChange($event)" [disabled]="isStarted || isPlayerModeSelectionDisabled">
+            <label class="btn btn-outline-primary" for="multiPlayer">Multi player</label>
+          </div>
+
+          <div class="gamer-info">
+            @if (isStarted && isSinglePlayer) {
+              <span>White, Black</span>
+            }
+            <span>{{ colorOfLocalGamer }}</span>
+            @if (isViewerJoined) {
+              <span>Viewer</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      @if (isMultiPlayer) {
+        <div class="row">
+          <div class="col">
+            @if (!isMultiplayerCreateOptionsDisabled) {
+              <div class="card">
+                <div class="card-body">
+                  @if (!isRoomCreated) {
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="Name of Room" aria-label="Room"
+                        aria-describedby="button-create" [(ngModel)]="roomNameForCreate" />
+                      <button class="btn btn-outline-secondary" type="button" id="button-create"
+                        (click)="onCreateGameClick()" >
+                        Create Game
+                      </button>
+                    </div>
+                  }
+                  <span>
+                    Local gamer: <b>white</b>,
+                    Remote gamer: <b>black</b>
+                    -
+                    @if (!isBlackGamerJoined) {
+                      <span style="color: red;">offline</span>
+                    }
+                    @if (isBlackGamerJoined) {
+                      <span style="color: green;">online</span>
+                    }
+                  </span>
+                  <br />
+                  @if (isRoomCreated) {
+                    <span class="multiplayer-info">
+                      Room: {{ roomNameForCreate }}, PIN: {{ PINForJoin }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+            @if (!isMultiplayerJoinOptionsDisabled) {
+              <div class="card">
+                <div class="card-body">
+                  @if (!(isStarted || isJoinDisabled)) {
+                    <div>
+                      <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Name of Room" [(ngModel)]="roomNameForJoin" />
+                        <input type="text" class="form-control" placeholder="PIN for Room" [(ngModel)]="PINForJoin" mask="0000" />
+                      </div>
+                      <button class="btn btn-outline-secondary btn-join" type="button" id="button-join-gamer"
+                        (click)="onJoinAsGamerClick()" >
+                        Join as Gamer
+                      </button>
+                      <button class="btn btn-outline-secondary btn-join" type="button" id="button-join-viewer"
+                        (click)="onJoinAsViewerClick()" >
+                        Join as Viewer
+                      </button>
+                    </div>
+                  }
+                  @if (isStarted || isViewerJoined) {
+                    <div>
+                      <span>
+                        Local gamer: <b>{{ isViewerJoined ? '-': 'black' }}</b>,
+                        Remote gamer: <b>{{ isViewerJoined ? 'white, black': 'white' }}</b>
+                      </span>
+                      <br />
+                      @if (!isStarted && isViewerJoined) {
+                        <span style="color: red;">
+                          We are waiting for the black player to join...
+                        </span>
+                      }
+                      <br />
+                      <span class="multiplayer-info">
+                        Room: {{ roomNameForJoin }}, PIN: {{ PINForJoin }}
+                      </span>
+                    </div>
+                  }
+                  @if (joinMsg) {
+                    <span style="color: red;">
+                      {{ joinMsg }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (isStarted) {
+        <div class="row">
+          <div class="col-12 col-md-6">
+            @if (!isLoadDetailVisible) {
+              <div class="card">
+                <div class="card-body steps">
+                  <h5 class="card-title">Step notation</h5>
+                  <ol>
+                    @for (step of steps; track step; let j = $index) {
+                      <li>
+                        <span>
+                          @if (step.white.figure) {
+                            <span class="chess-icons s16" [ngClass]="'white ' + step.white.figure"></span>
+                          }
+                          {{step.white.notation}}
+                        </span>
+                        @if (step.black) {
+                          <span style="margin-left: 20px;">
+                            @if (step.black?.figure) {
+                              <span class="chess-icons s16" [ngClass]="'black ' + step.black.figure"></span>
+                            }
+                            {{step.black.notation || ""}}
+                          </span>
+                        }
+                      </li>
+                    }
+                  </ol>
+                </div>
+              </div>
+            }
+            <div class="card">
+              <div class="card-body">
+                @if (isSaveAndLoadVisible) {
+                  <div>
+                    <button class="btn btn-outline-secondary" type="button" id="button-load-game"
+                      (click)="onLoadGameClick()" style="margin-right: 15px;">
+                      Load
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" id="button-save-game"
+                      (click)="onSaveGameClick()" >
+                      Save
+                    </button>
+                  </div>
+                }
+                @if (isSaveDetailVisible) {
+                  <div>
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="Name of Game" aria-label="Name"
+                        aria-describedby="button-save" [(ngModel)]="nameForSave" />
+                      <button class="btn btn-outline-secondary" type="button" id="button-save"
+                        (click)="onSaveClick()" [disabled]="!nameForSave" >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                }
+                @if (isLoadDetailVisible) {
+                  <div>
+                    <div class="game-list">
+                      <div class="list-group">
+                        @for (item of gameList; track item; let i = $index) {
+                          <button type="button" class="list-group-item list-group-item-action"
+                            [ngClass]="{ 'active': i === selectedItemForLoad}"
+                            (click)="onSelectGameClick(i)">
+                            {{item.name}} <span class="bold"> - {{item.date}}</span>
+                          </button>
+                        }
+                      </div>
+                    </div>
+                    <button class="btn btn-outline-secondary" type="button" id="button-load"
+                      (click)="onLoadClick()" [disabled]="!isGameSelectedForLoad" >
+                      Load
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            @if (isMultiPlayer) {
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Chat</h5>
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Name for Chat" [(ngModel)]="nameForChat" />
+                  </div>
+                  <div class="chat">
+                    @for (msg of chatMessages; track msg) {
+                      <span class="chat-message"
+                        [ngClass]="{'left': msg.isOwnMessage }">
+                        @if (msg.player) {
+                          <span class="chess-icons s16" [ngClass]="msg.player + ' king'"></span>
+                        }
+                        @if (!msg.player) {
+                          <span class="viewer-icon">[viewer]</span>
+                        }
+                        <span class="name">{{msg.name}}</span>
+                        <div class="msg">{{msg.message}}</div>
+                      </span>
+                    }
+                  </div>
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Message" aria-label="Message"
+                      aria-describedby="button-send-message" [(ngModel)]="messageForChat" />
+                    <button class="btn btn-outline-secondary" type="button" id="button-send-message"
+                      (click)="onSendMessageClick()" >
+                      Send
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
 </div>
